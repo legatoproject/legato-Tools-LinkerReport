@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8">
+        <title>Binary Size Analysis</title>
+        <script src="https://d3js.org/d3.v3.min.js"></script>
+        <link rel="stylesheet" type="text/css"
+            href="https://fonts.googleapis.com/css?family=Open+Sans:400,600">
+        <link href="https://fonts.googleapis.com/css?family=Source+Code+Pro&display=swap"
+            rel="stylesheet">
+        <link rel="stylesheet" type="text/css" href="sequences.css"/>
+    </head>
+
+    <body>
+        <div id="main">
+            <div id="sequence"></div>
+            <div id="chart" class="chart">
+                <div id="explanation" style="visibility: hidden;">
+                    <span id="percentage"></span><br/>
+                    bytes in <span id="percentage_desc"></span>
+                </div>
+            </div>
+        </div>
+        <div id="sidebar">
+            <div id="legend"></div>
+            <p>Hover over element to see name and size.</p>
+            <p>Click on an element to zoom in.</p>
+            <p>Click on centre circle to zoom out.</p>
+        </div>
+        <div id="summary">
+            <h2>Summary</h2>
+            <table id="summary-table">
+                <thead>
+                <tr>
+                    <th>Memory Type</th>
+                    <th>Size (B)</th>
+                    <th>Shared Size (B)</th>
+                    <th>Total (B)</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr>
+                    <td>ROM</td>
+                    <td id="rom" class="num">&nbsp;</td>
+                    <td class="num both">&nbsp;</td>
+                    <td id="totalrom" class="num">&nbsp;</td>
+                </tr>
+                <tr>
+                    <td>RAM</td>
+                    <td id="ram" class="num">&nbsp;</td>
+                    <td class="num both">&nbsp;</td>
+                    <td id="totalram" class="num">&nbsp;</td>
+                </tr>
+                </tbody>
+            </table>
+            <h2>Image Information</h2>
+            <div id="summary-info">
+                <table>
+                    <tbody>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        <script type="text/javascript" src="data-flare.js"></script>
+        <script type="text/javascript" src="sequences.js"></script>
+    </body>
+</html>
