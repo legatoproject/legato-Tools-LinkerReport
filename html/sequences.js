@@ -121,6 +121,14 @@ function renderSummary(json) {
     row.append("td").text(e.name).classed("property", true);
     row.append("td").text(e.value).classed("value", true);
   })
+
+  if (json['CSV'])
+  {
+    var csvfile = json['Device'] + ".csv";
+    var datalink = d3.select('p#data-link');
+    datalink.html(
+      "Download symbol data in CSV format: <a href=\"" + csvfile + "\">" + csvfile + "</a>");
+  }
 }
 
 function render() {

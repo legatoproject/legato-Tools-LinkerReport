@@ -3,6 +3,7 @@ var summary_map = {
     "Device": "alt1250-mcu", 
     "RAM": 36888, 
     "ROM": 50266, 
+    "CSV": false, 
     "Build": [
         {
             "name": "Binary", 

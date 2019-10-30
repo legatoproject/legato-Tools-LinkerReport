@@ -51,9 +51,10 @@ class Output(object):
 
 class JSOutput(Output):
     """Output to JavaScript suitable for d3.js visualisations."""
-    def __init__(self, device, fd, browser = False):
+    def __init__(self, device, fd, browser = False, also_csv = False):
         super(JSOutput, self).__init__(device, fd)
         self.browser = browser
+        self.also_csv = also_csv
 
     def add_leaf(self, parent, pth, leaf):
         """Add a leaf node to the JS symbol tree."""
@@ -80,6 +81,7 @@ class JSOutput(Output):
             'ROM': 0,
             'RAM+ROM': 0,
             'Device': self.device,
+            'CSV': self.also_csv,
             'Build': build_info
         }
 
@@ -172,7 +174,8 @@ class Toolchain(object):
         info = [
             {
                 'name': 'Binary',
-                'value': binaries[0]
+                'value': self.strip_prefix(
+                    self.strip_prefix(os.path.abspath(binaries[0]), os.getcwd()), os.sep)
             },
             {
                 'name': 'Time',
@@ -334,7 +337,8 @@ def get_outputs(args):
     """Instantiate output providers based on command line arguments."""
     outputs = {}
     if args.js:
-        outputs['js'] = JSOutput(args.device, args.js, browser = args.browser)
+        outputs['js'] = JSOutput(args.device, args.js, browser = args.browser,
+            also_csv = bool(args.csv))
     if args.csv:
         outputs['csv'] = CSVOutput(args.device, args.csv)
     return outputs
