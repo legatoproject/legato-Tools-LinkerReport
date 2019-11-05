@@ -1,9 +1,24 @@
+// Automatically generated file; do not edit.
+var section_types = {
+    "RAM+ROM": [
+        ".data", 
+        ".uncached"
+    ], 
+    "RAM": [
+        ".bss", 
+        ".heap", 
+        ".stack_dummy"
+    ], 
+    "ROM": [
+        ".rodata", 
+        ".rodatafiller", 
+        ".text"
+    ]
+}
 var summary_map = {
     "RAM+ROM": 742, 
-    "Device": "alt1250-mcu", 
-    "RAM": 36888, 
     "ROM": 50266, 
-    "CSV": false, 
+    "RAM": 36888, 
     "Build": [
         {
             "name": "Binary", 
@@ -13,7 +28,9 @@ var summary_map = {
             "name": "Time", 
             "value": "Thu Oct 17 15:39:03 2019"
         }
-    ]
+    ], 
+    "Device": "alt1250-mcu", 
+    "CSV": false
 }
 var size_map = {
     "section": "alt1250-mcu", 
@@ -983,23 +1000,944 @@ var size_map = {
                 }, 
                 {
                     "section": ".text", 
-                    "name": "__ssrefill_r", 
-                    "size": 58
-                }, 
-                {
-                    "section": ".text", 
-                    "name": "__swrite", 
-                    "size": 56
-                }, 
-                {
-                    "section": ".text", 
-                    "name": "_signal_r", 
-                    "size": 48
-                }, 
-                {
-                    "section": ".text", 
-                    "name": "_isatty", 
-                    "size": 16
+                    "name": "<NO SOURCE>", 
+                    "children": [
+                        {
+                            "section": ".text", 
+                            "name": "__ssrefill_r", 
+                            "size": 58
+                        }, 
+                        {
+                            "section": ".text", 
+                            "name": "__swrite", 
+                            "size": 56
+                        }, 
+                        {
+                            "section": ".text", 
+                            "name": "_signal_r", 
+                            "size": 48
+                        }, 
+                        {
+                            "section": ".text", 
+                            "name": "_isatty", 
+                            "size": 16
+                        }, 
+                        {
+                            "section": ".text", 
+                            "name": "__aeabi_unwind_cpp_pr1", 
+                            "size": 4
+                        }, 
+                        {
+                            "section": ".text", 
+                            "name": "_lseek", 
+                            "size": 16
+                        }, 
+                        {
+                            "section": ".text", 
+                            "name": "_Unwind_GetCFA", 
+                            "size": 4
+                        }, 
+                        {
+                            "section": ".text", 
+                            "name": "_fstat", 
+                            "size": 16
+                        }, 
+                        {
+                            "section": ".text", 
+                            "name": "___Unwind_RaiseException", 
+                            "size": 34
+                        }, 
+                        {
+                            "section": ".text", 
+                            "name": "strtoul", 
+                            "size": 20
+                        }, 
+                        {
+                            "section": ".text", 
+                            "name": "_vfprintf_r", 
+                            "size": 592
+                        }, 
+                        {
+                            "section": ".text", 
+                            "name": "__retarget_lock_try_acquire", 
+                            "size": 4
+                        }, 
+                        {
+                            "section": ".text", 
+                            "name": "__sfputc_r", 
+                            "size": 42
+                        }, 
+                        {
+                            "section": ".text", 
+                            "name": "__fp_lock", 
+                            "size": 24
+                        }, 
+                        {
+                            "section": ".text", 
+                            "name": "raise", 
+                            "size": 16
+                        }, 
+                        {
+                            "section": ".text", 
+                            "name": "_sscanf_r", 
+                            "size": 84
+                        }, 
+                        {
+                            "section": ".text", 
+                            "name": "printf", 
+                            "size": 48
+                        }, 
+                        {
+                            "section": ".text", 
+                            "name": "__sf_fake_stdout", 
+                            "size": 32
+                        }, 
+                        {
+                            "section": ".text", 
+                            "name": "_global_impure_ptr", 
+                            "size": 4
+                        }, 
+                        {
+                            "section": ".text", 
+                            "name": "_Unwind_GetGR", 
+                            "size": 24
+                        }, 
+                        {
+                            "section": ".text", 
+                            "name": "unwind_phase2_forced", 
+                            "size": 206
+                        }, 
+                        {
+                            "section": ".text", 
+                            "name": "__malloc_unlock", 
+                            "size": 12
+                        }, 
+                        {
+                            "section": ".text", 
+                            "name": "unwind_UCB_from_context", 
+                            "size": 2
+                        }, 
+                        {
+                            "section": ".text", 
+                            "name": "__aeabi_unwind_cpp_pr2", 
+                            "size": 4
+                        }, 
+                        {
+                            "section": ".text", 
+                            "name": "_Unwind_decode_typeinfo_ptr.isra.0", 
+                            "size": 10
+                        }, 
+                        {
+                            "section": ".text", 
+                            "name": "__retarget_lock_try_acquire_recursive", 
+                            "size": 4
+                        }, 
+                        {
+                            "section": ".text", 
+                            "name": "strcmp", 
+                            "size": 20
+                        }, 
+                        {
+                            "section": ".text", 
+                            "name": "memcpy", 
+                            "size": 28
+                        }, 
+                        {
+                            "section": ".text", 
+                            "name": "selfrel_offset31", 
+                            "size": 18
+                        }, 
+                        {
+                            "section": ".text", 
+                            "name": "_fputc_r", 
+                            "size": 112
+                        }, 
+                        {
+                            "section": ".text", 
+                            "name": "_exit", 
+                            "size": 2
+                        }, 
+                        {
+                            "section": ".text", 
+                            "name": "vfiprintf", 
+                            "size": 20
+                        }, 
+                        {
+                            "section": ".text", 
+                            "name": "memmove", 
+                            "size": 52
+                        }, 
+                        {
+                            "section": ".text", 
+                            "name": "_Unwind_SetGR", 
+                            "size": 24
+                        }, 
+                        {
+                            "section": ".text", 
+                            "name": "_cleanup_r", 
+                            "size": 12
+                        }, 
+                        {
+                            "section": ".text", 
+                            "name": "__sf_fake_stdin", 
+                            "size": 32
+                        }, 
+                        {
+                            "section": ".text", 
+                            "name": "__sf_fake_stderr", 
+                            "size": 32
+                        }, 
+                        {
+                            "section": ".text", 
+                            "name": "cleanup_glue", 
+                            "size": 26
+                        }, 
+                        {
+                            "section": ".text", 
+                            "name": "__gnu_unwind_get_pr_addr", 
+                            "size": 40
+                        }, 
+                        {
+                            "section": ".text", 
+                            "name": "__retarget_lock_init", 
+                            "size": 2
+                        }, 
+                        {
+                            "section": ".text", 
+                            "name": "_strtoul_l.isra.0", 
+                            "size": 236
+                        }, 
+                        {
+                            "section": ".text", 
+                            "name": "sscanf", 
+                            "size": 84
+                        }, 
+                        {
+                            "section": ".text", 
+                            "name": "_fwalk", 
+                            "size": 56
+                        }, 
+                        {
+                            "section": ".text", 
+                            "name": "__smakebuf_r", 
+                            "size": 128
+                        }, 
+                        {
+                            "section": ".text", 
+                            "name": "_scanf_i", 
+                            "size": 488
+                        }, 
+                        {
+                            "section": ".text", 
+                            "name": "_close", 
+                            "size": 16
+                        }, 
+                        {
+                            "section": ".text", 
+                            "name": "__sprint_r", 
+                            "size": 26
+                        }, 
+                        {
+                            "section": ".text", 
+                            "name": "_fwrite_r", 
+                            "size": 192
+                        }, 
+                        {
+                            "section": ".text", 
+                            "name": "_write_r", 
+                            "size": 36
+                        }, 
+                        {
+                            "section": ".text", 
+                            "name": "__FUNCTION__.8134", 
+                            "size": 14
+                        }, 
+                        {
+                            "section": ".text", 
+                            "name": "__gnu_unwind_pr_common", 
+                            "size": 712
+                        }, 
+                        {
+                            "section": ".text", 
+                            "name": "putc", 
+                            "size": 16
+                        }, 
+                        {
+                            "section": ".text", 
+                            "name": "__gnu_unwind_frame", 
+                            "size": 40
+                        }, 
+                        {
+                            "section": ".text", 
+                            "name": "__FUNCTION__.7530", 
+                            "size": 26
+                        }, 
+                        {
+                            "section": ".text", 
+                            "name": "setvbuf", 
+                            "size": 388
+                        }, 
+                        {
+                            "section": ".text", 
+                            "name": "fwrite", 
+                            "size": 28
+                        }, 
+                        {
+                            "section": ".text", 
+                            "name": "_read", 
+                            "size": 16
+                        }, 
+                        {
+                            "section": ".text", 
+                            "name": "_raise_r", 
+                            "size": 80
+                        }, 
+                        {
+                            "section": ".text", 
+                            "name": "__swsetup_r", 
+                            "size": 220
+                        }, 
+                        {
+                            "section": ".text", 
+                            "name": "strlen", 
+                            "size": 16
+                        }, 
+                        {
+                            "section": ".text", 
+                            "name": "_putc_r", 
+                            "size": 144
+                        }, 
+                        {
+                            "section": ".text", 
+                            "name": "_siscanf_r", 
+                            "size": 84
+                        }, 
+                        {
+                            "section": ".text", 
+                            "name": "__gnu_Unwind_Backtrace", 
+                            "size": 112
+                        }, 
+                        {
+                            "section": ".text", 
+                            "name": "_Unwind_Complete", 
+                            "size": 2
+                        }, 
+                        {
+                            "section": ".text", 
+                            "name": "_getpid", 
+                            "size": 16
+                        }, 
+                        {
+                            "section": ".text", 
+                            "name": "__ssvfiscanf_r", 
+                            "size": 656
+                        }, 
+                        {
+                            "section": ".text", 
+                            "name": "__retarget_lock_release", 
+                            "size": 2
+                        }, 
+                        {
+                            "section": ".text", 
+                            "name": "fputc", 
+                            "size": 16
+                        }, 
+                        {
+                            "section": ".text", 
+                            "name": "_Unwind_Resume", 
+                            "size": 34
+                        }, 
+                        {
+                            "section": ".text", 
+                            "name": "__retarget_lock_acquire", 
+                            "size": 2
+                        }, 
+                        {
+                            "section": ".text", 
+                            "name": "__sfvwrite_r", 
+                            "size": 672
+                        }, 
+                        {
+                            "section": ".text", 
+                            "name": "__swbuf_r", 
+                            "size": 164
+                        }, 
+                        {
+                            "section": ".text", 
+                            "name": "_reclaim_reent", 
+                            "size": 184
+                        }, 
+                        {
+                            "section": ".text", 
+                            "name": "_strtol_l.isra.0", 
+                            "size": 240
+                        }, 
+                        {
+                            "section": ".text", 
+                            "name": "restore_non_core_regs", 
+                            "size": 88
+                        }, 
+                        {
+                            "section": ".text", 
+                            "name": "strtol_l", 
+                            "size": 20
+                        }, 
+                        {
+                            "section": ".text", 
+                            "name": "_Unwind_VRS_Pop", 
+                            "size": 632
+                        }, 
+                        {
+                            "section": ".text", 
+                            "name": "__sigtramp_r", 
+                            "size": 72
+                        }, 
+                        {
+                            "section": ".text", 
+                            "name": "_init_signal_r", 
+                            "size": 40
+                        }, 
+                        {
+                            "section": ".text", 
+                            "name": "__sinit", 
+                            "size": 112
+                        }, 
+                        {
+                            "section": ".text", 
+                            "name": "_sungetc_r", 
+                            "size": 122
+                        }, 
+                        {
+                            "section": ".text", 
+                            "name": "_close_r", 
+                            "size": 32
+                        }, 
+                        {
+                            "section": ".text", 
+                            "name": "puts", 
+                            "size": 16
+                        }, 
+                        {
+                            "section": ".text", 
+                            "name": "_fflush_r", 
+                            "size": 120
+                        }, 
+                        {
+                            "section": ".text", 
+                            "name": "_Unwind_GetLanguageSpecificData", 
+                            "size": 18
+                        }, 
+                        {
+                            "section": ".text", 
+                            "name": "__libc_init_array", 
+                            "size": 72
+                        }, 
+                        {
+                            "section": ".text", 
+                            "name": "__sfmoreglue", 
+                            "size": 44
+                        }, 
+                        {
+                            "section": ".text", 
+                            "name": "__seofread", 
+                            "size": 4
+                        }, 
+                        {
+                            "section": ".text", 
+                            "name": "_init_signal", 
+                            "size": 12
+                        }, 
+                        {
+                            "section": ".text", 
+                            "name": "_iprintf_r", 
+                            "size": 40
+                        }, 
+                        {
+                            "section": ".text", 
+                            "name": "__gnu_unwind_24bit.isra.1", 
+                            "size": 4
+                        }, 
+                        {
+                            "section": ".text", 
+                            "name": "__retarget_lock_init_recursive", 
+                            "size": 2
+                        }, 
+                        {
+                            "section": ".text", 
+                            "name": "get_eit_entry", 
+                            "size": 160
+                        }, 
+                        {
+                            "section": ".text", 
+                            "name": "__FUNCTION__.7518", 
+                            "size": 26
+                        }, 
+                        {
+                            "section": ".text", 
+                            "name": "__submore", 
+                            "size": 116
+                        }, 
+                        {
+                            "section": ".text", 
+                            "name": "__sinit_lock_release", 
+                            "size": 12
+                        }, 
+                        {
+                            "section": ".text", 
+                            "name": "__restore_core_regs", 
+                            "size": 24
+                        }, 
+                        {
+                            "section": ".text", 
+                            "name": "_malloc_r", 
+                            "size": 180
+                        }, 
+                        {
+                            "section": ".text", 
+                            "name": "__sfp_lock_release", 
+                            "size": 12
+                        }, 
+                        {
+                            "section": ".text", 
+                            "name": "_scanf_chars", 
+                            "size": 176
+                        }, 
+                        {
+                            "section": ".text", 
+                            "name": "__sigtramp", 
+                            "size": 16
+                        }, 
+                        {
+                            "section": ".text", 
+                            "name": "_printf_r", 
+                            "size": 40
+                        }, 
+                        {
+                            "section": ".text", 
+                            "name": "strtol", 
+                            "size": 20
+                        }, 
+                        {
+                            "section": ".text", 
+                            "name": "_fstat_r", 
+                            "size": 36
+                        }, 
+                        {
+                            "section": ".text", 
+                            "name": "__fp_lock_all", 
+                            "size": 28
+                        }, 
+                        {
+                            "section": ".text", 
+                            "name": "__aeabi_unwind_cpp_pr0", 
+                            "size": 4
+                        }, 
+                        {
+                            "section": ".text", 
+                            "name": "__gnu_unwind_execute", 
+                            "size": 710
+                        }, 
+                        {
+                            "section": ".text", 
+                            "name": "__sread", 
+                            "size": 34
+                        }, 
+                        {
+                            "section": ".text", 
+                            "name": "signal", 
+                            "size": 16
+                        }, 
+                        {
+                            "section": ".text", 
+                            "name": "__sseek", 
+                            "size": 36
+                        }, 
+                        {
+                            "section": ".text", 
+                            "name": "std", 
+                            "size": 72
+                        }, 
+                        {
+                            "section": ".text", 
+                            "name": "siscanf", 
+                            "size": 84
+                        }, 
+                        {
+                            "section": ".text", 
+                            "name": "_fwalk_reent", 
+                            "size": 60
+                        }, 
+                        {
+                            "section": ".text", 
+                            "name": "__gnu_Unwind_Resume", 
+                            "size": 68
+                        }, 
+                        {
+                            "section": ".text", 
+                            "name": "_Unwind_GetGR.constprop.0", 
+                            "size": 26
+                        }, 
+                        {
+                            "section": ".text", 
+                            "name": "__retarget_lock_release_recursive", 
+                            "size": 2
+                        }, 
+                        {
+                            "section": ".text", 
+                            "name": "__retarget_lock_acquire_recursive", 
+                            "size": 2
+                        }, 
+                        {
+                            "section": ".text", 
+                            "name": "_strtol_r", 
+                            "size": 4
+                        }, 
+                        {
+                            "section": ".text", 
+                            "name": "malloc", 
+                            "size": 16
+                        }, 
+                        {
+                            "section": ".text", 
+                            "name": "restore_core_regs", 
+                            "size": 24
+                        }, 
+                        {
+                            "section": ".text", 
+                            "name": "___Unwind_ForcedUnwind", 
+                            "size": 34
+                        }, 
+                        {
+                            "section": ".text", 
+                            "name": "strtoul_l", 
+                            "size": 20
+                        }, 
+                        {
+                            "section": ".text", 
+                            "name": "__sinit_lock_acquire", 
+                            "size": 12
+                        }, 
+                        {
+                            "section": ".text", 
+                            "name": "_Unwind_RaiseException", 
+                            "size": 34
+                        }, 
+                        {
+                            "section": ".text", 
+                            "name": "__fp_unlock", 
+                            "size": 24
+                        }, 
+                        {
+                            "section": ".text", 
+                            "name": "_Unwind_ForcedUnwind", 
+                            "size": 34
+                        }, 
+                        {
+                            "section": ".text", 
+                            "name": "strncpy", 
+                            "size": 38
+                        }, 
+                        {
+                            "section": ".text", 
+                            "name": "iprintf", 
+                            "size": 48
+                        }, 
+                        {
+                            "section": ".text", 
+                            "name": "__sflush_r", 
+                            "size": 268
+                        }, 
+                        {
+                            "section": ".text", 
+                            "name": "_cleanup", 
+                            "size": 12
+                        }, 
+                        {
+                            "section": ".text", 
+                            "name": "___Unwind_Resume_or_Rethrow", 
+                            "size": 34
+                        }, 
+                        {
+                            "section": ".text", 
+                            "name": "__malloc_lock", 
+                            "size": 12
+                        }, 
+                        {
+                            "section": ".text", 
+                            "name": "ungetc", 
+                            "size": 16
+                        }, 
+                        {
+                            "section": ".text", 
+                            "name": "__gnu_Unwind_ForcedUnwind", 
+                            "size": 18
+                        }, 
+                        {
+                            "section": ".text", 
+                            "name": "_Unwind_Backtrace", 
+                            "size": 34
+                        }, 
+                        {
+                            "section": ".text", 
+                            "name": "_sbrk_r", 
+                            "size": 32
+                        }, 
+                        {
+                            "section": ".text", 
+                            "name": "exit", 
+                            "size": 40
+                        }, 
+                        {
+                            "section": ".text", 
+                            "name": "__ssvfscanf_r", 
+                            "size": 656
+                        }, 
+                        {
+                            "section": ".text", 
+                            "name": "__retarget_lock_close", 
+                            "size": 2
+                        }, 
+                        {
+                            "section": ".text", 
+                            "name": "memset", 
+                            "size": 16
+                        }, 
+                        {
+                            "section": ".text", 
+                            "name": "unwind_phase2", 
+                            "size": 58
+                        }, 
+                        {
+                            "section": ".text", 
+                            "name": "__sccl", 
+                            "size": 100
+                        }, 
+                        {
+                            "section": ".text", 
+                            "name": "free", 
+                            "size": 16
+                        }, 
+                        {
+                            "section": ".text", 
+                            "name": "__retarget_lock_close_recursive", 
+                            "size": 2
+                        }, 
+                        {
+                            "section": ".text", 
+                            "name": "_sbrk", 
+                            "size": 28
+                        }, 
+                        {
+                            "section": ".text", 
+                            "name": "_getpid_r", 
+                            "size": 4
+                        }, 
+                        {
+                            "section": ".text", 
+                            "name": "_isatty_r", 
+                            "size": 32
+                        }, 
+                        {
+                            "section": ".text", 
+                            "name": "___Unwind_Backtrace", 
+                            "size": 34
+                        }, 
+                        {
+                            "section": ".text", 
+                            "name": "__FUNCTION__.8010", 
+                            "size": 34
+                        }, 
+                        {
+                            "section": ".text", 
+                            "name": "_printf_i", 
+                            "size": 552
+                        }, 
+                        {
+                            "section": ".text", 
+                            "name": "_Unwind_GetRegionStart", 
+                            "size": 10
+                        }, 
+                        {
+                            "section": ".text", 
+                            "name": "__gnu_Unwind_RaiseException", 
+                            "size": 94
+                        }, 
+                        {
+                            "section": ".text", 
+                            "name": "_read_r", 
+                            "size": 36
+                        }, 
+                        {
+                            "section": ".text", 
+                            "name": "_kill_r", 
+                            "size": 36
+                        }, 
+                        {
+                            "section": ".text", 
+                            "name": "fflush", 
+                            "size": 36
+                        }, 
+                        {
+                            "section": ".text", 
+                            "name": "next_unwind_byte", 
+                            "size": 54
+                        }, 
+                        {
+                            "section": ".text", 
+                            "name": "_Unwind_DeleteException", 
+                            "size": 12
+                        }, 
+                        {
+                            "section": ".text", 
+                            "name": "_vfiprintf_r", 
+                            "size": 592
+                        }, 
+                        {
+                            "section": ".text", 
+                            "name": "_Unwind_Resume_or_Rethrow", 
+                            "size": 34
+                        }, 
+                        {
+                            "section": ".text", 
+                            "name": "__FUNCTION__.7983", 
+                            "size": 23
+                        }, 
+                        {
+                            "section": ".text", 
+                            "name": "__swhatbuf_r", 
+                            "size": 72
+                        }, 
+                        {
+                            "section": ".text", 
+                            "name": "_strtoul_r", 
+                            "size": 4
+                        }, 
+                        {
+                            "section": ".text", 
+                            "name": "__sclose", 
+                            "size": 8
+                        }, 
+                        {
+                            "section": ".text", 
+                            "name": "__sfp_lock_acquire", 
+                            "size": 12
+                        }, 
+                        {
+                            "section": ".text", 
+                            "name": "__swbuf", 
+                            "size": 16
+                        }, 
+                        {
+                            "section": ".text", 
+                            "name": "__sfputs_r", 
+                            "size": 36
+                        }, 
+                        {
+                            "section": ".text", 
+                            "name": "_ungetc_r", 
+                            "size": 300
+                        }, 
+                        {
+                            "section": ".text", 
+                            "name": "_Unwind_DebugHook", 
+                            "size": 2
+                        }, 
+                        {
+                            "section": ".text", 
+                            "name": "__FUNCTION__.7970", 
+                            "size": 22
+                        }, 
+                        {
+                            "section": ".text", 
+                            "name": "_lseek_r", 
+                            "size": 36
+                        }, 
+                        {
+                            "section": ".text", 
+                            "name": "__fp_unlock_all", 
+                            "size": 28
+                        }, 
+                        {
+                            "section": ".text", 
+                            "name": "__sfp", 
+                            "size": 140
+                        }, 
+                        {
+                            "section": ".text", 
+                            "name": "_realloc_r", 
+                            "size": 76
+                        }, 
+                        {
+                            "section": ".text", 
+                            "name": "_Unwind_VRS_Get", 
+                            "size": 42
+                        }, 
+                        {
+                            "section": ".text", 
+                            "name": "_malloc_usable_size_r", 
+                            "size": 16
+                        }, 
+                        {
+                            "section": ".text", 
+                            "name": "_ctype_", 
+                            "size": 257
+                        }, 
+                        {
+                            "section": ".text", 
+                            "name": "_kill", 
+                            "size": 16
+                        }, 
+                        {
+                            "section": ".text", 
+                            "name": "vfprintf", 
+                            "size": 20
+                        }, 
+                        {
+                            "section": ".text", 
+                            "name": "_puts_r", 
+                            "size": 220
+                        }, 
+                        {
+                            "section": ".text", 
+                            "name": "___Unwind_Resume", 
+                            "size": 34
+                        }, 
+                        {
+                            "section": ".text", 
+                            "name": "_Unwind_VRS_Set", 
+                            "size": 42
+                        }, 
+                        {
+                            "section": ".text", 
+                            "name": "search_EIT_table", 
+                            "size": 98
+                        }, 
+                        {
+                            "section": ".text", 
+                            "name": "abort", 
+                            "size": 14
+                        }, 
+                        {
+                            "section": ".text", 
+                            "name": "_printf_common", 
+                            "size": 234
+                        }, 
+                        {
+                            "section": ".text", 
+                            "name": "strncmp", 
+                            "size": 36
+                        }, 
+                        {
+                            "section": ".text", 
+                            "name": "_free_r", 
+                            "size": 156
+                        }, 
+                        {
+                            "section": ".text", 
+                            "name": "__gnu_Unwind_Resume_or_Rethrow", 
+                            "size": 14
+                        }
+                    ]
                 }, 
                 {
                     "section": ".text", 
@@ -1625,71 +2563,6 @@ var size_map = {
                 }, 
                 {
                     "section": ".text", 
-                    "name": "__aeabi_unwind_cpp_pr1", 
-                    "size": 4
-                }, 
-                {
-                    "section": ".text", 
-                    "name": "_lseek", 
-                    "size": 16
-                }, 
-                {
-                    "section": ".text", 
-                    "name": "_Unwind_GetCFA", 
-                    "size": 4
-                }, 
-                {
-                    "section": ".text", 
-                    "name": "_fstat", 
-                    "size": 16
-                }, 
-                {
-                    "section": ".text", 
-                    "name": "___Unwind_RaiseException", 
-                    "size": 34
-                }, 
-                {
-                    "section": ".text", 
-                    "name": "strtoul", 
-                    "size": 20
-                }, 
-                {
-                    "section": ".text", 
-                    "name": "_vfprintf_r", 
-                    "size": 592
-                }, 
-                {
-                    "section": ".text", 
-                    "name": "__retarget_lock_try_acquire", 
-                    "size": 4
-                }, 
-                {
-                    "section": ".text", 
-                    "name": "__sfputc_r", 
-                    "size": 42
-                }, 
-                {
-                    "section": ".text", 
-                    "name": "__fp_lock", 
-                    "size": 24
-                }, 
-                {
-                    "section": ".text", 
-                    "name": "raise", 
-                    "size": 16
-                }, 
-                {
-                    "section": ".text", 
-                    "name": "_sscanf_r", 
-                    "size": 84
-                }, 
-                {
-                    "section": ".text", 
-                    "name": "printf", 
-                    "size": 48
-                }, 
-                {
-                    "section": ".text", 
                     "name": "CMSIS", 
                     "children": [
                         {
@@ -1737,106 +2610,6 @@ var size_map = {
                             ]
                         }
                     ]
-                }, 
-                {
-                    "section": ".text", 
-                    "name": "__sf_fake_stdout", 
-                    "size": 32
-                }, 
-                {
-                    "section": ".text", 
-                    "name": "_global_impure_ptr", 
-                    "size": 4
-                }, 
-                {
-                    "section": ".text", 
-                    "name": "_Unwind_GetGR", 
-                    "size": 24
-                }, 
-                {
-                    "section": ".text", 
-                    "name": "unwind_phase2_forced", 
-                    "size": 206
-                }, 
-                {
-                    "section": ".text", 
-                    "name": "__malloc_unlock", 
-                    "size": 12
-                }, 
-                {
-                    "section": ".text", 
-                    "name": "unwind_UCB_from_context", 
-                    "size": 2
-                }, 
-                {
-                    "section": ".text", 
-                    "name": "__aeabi_unwind_cpp_pr2", 
-                    "size": 4
-                }, 
-                {
-                    "section": ".text", 
-                    "name": "_Unwind_decode_typeinfo_ptr.isra.0", 
-                    "size": 10
-                }, 
-                {
-                    "section": ".text", 
-                    "name": "__retarget_lock_try_acquire_recursive", 
-                    "size": 4
-                }, 
-                {
-                    "section": ".text", 
-                    "name": "strcmp", 
-                    "size": 20
-                }, 
-                {
-                    "section": ".text", 
-                    "name": "memcpy", 
-                    "size": 28
-                }, 
-                {
-                    "section": ".text", 
-                    "name": "selfrel_offset31", 
-                    "size": 18
-                }, 
-                {
-                    "section": ".text", 
-                    "name": "_fputc_r", 
-                    "size": 112
-                }, 
-                {
-                    "section": ".text", 
-                    "name": "_exit", 
-                    "size": 2
-                }, 
-                {
-                    "section": ".text", 
-                    "name": "vfiprintf", 
-                    "size": 20
-                }, 
-                {
-                    "section": ".text", 
-                    "name": "memmove", 
-                    "size": 52
-                }, 
-                {
-                    "section": ".text", 
-                    "name": "_Unwind_SetGR", 
-                    "size": 24
-                }, 
-                {
-                    "section": ".text", 
-                    "name": "_cleanup_r", 
-                    "size": 12
-                }, 
-                {
-                    "section": ".text", 
-                    "name": "__sf_fake_stdin", 
-                    "size": 32
-                }, 
-                {
-                    "section": ".text", 
-                    "name": "__sf_fake_stderr", 
-                    "size": 32
                 }, 
                 {
                     "section": ".text", 
@@ -1909,116 +2682,6 @@ var size_map = {
                 }, 
                 {
                     "section": ".text", 
-                    "name": "cleanup_glue", 
-                    "size": 26
-                }, 
-                {
-                    "section": ".text", 
-                    "name": "__gnu_unwind_get_pr_addr", 
-                    "size": 40
-                }, 
-                {
-                    "section": ".text", 
-                    "name": "__retarget_lock_init", 
-                    "size": 2
-                }, 
-                {
-                    "section": ".text", 
-                    "name": "_strtoul_l.isra.0", 
-                    "size": 236
-                }, 
-                {
-                    "section": ".text", 
-                    "name": "sscanf", 
-                    "size": 84
-                }, 
-                {
-                    "section": ".text", 
-                    "name": "_fwalk", 
-                    "size": 56
-                }, 
-                {
-                    "section": ".text", 
-                    "name": "__smakebuf_r", 
-                    "size": 128
-                }, 
-                {
-                    "section": ".text", 
-                    "name": "_scanf_i", 
-                    "size": 488
-                }, 
-                {
-                    "section": ".text", 
-                    "name": "_close", 
-                    "size": 16
-                }, 
-                {
-                    "section": ".text", 
-                    "name": "__sprint_r", 
-                    "size": 26
-                }, 
-                {
-                    "section": ".text", 
-                    "name": "_fwrite_r", 
-                    "size": 192
-                }, 
-                {
-                    "section": ".text", 
-                    "name": "_write_r", 
-                    "size": 36
-                }, 
-                {
-                    "section": ".text", 
-                    "name": "__FUNCTION__.8134", 
-                    "size": 14
-                }, 
-                {
-                    "section": ".text", 
-                    "name": "__gnu_unwind_pr_common", 
-                    "size": 712
-                }, 
-                {
-                    "section": ".text", 
-                    "name": "putc", 
-                    "size": 16
-                }, 
-                {
-                    "section": ".text", 
-                    "name": "__gnu_unwind_frame", 
-                    "size": 40
-                }, 
-                {
-                    "section": ".text", 
-                    "name": "__FUNCTION__.7530", 
-                    "size": 26
-                }, 
-                {
-                    "section": ".text", 
-                    "name": "setvbuf", 
-                    "size": 388
-                }, 
-                {
-                    "section": ".text", 
-                    "name": "fwrite", 
-                    "size": 28
-                }, 
-                {
-                    "section": ".text", 
-                    "name": "_read", 
-                    "size": 16
-                }, 
-                {
-                    "section": ".text", 
-                    "name": "_raise_r", 
-                    "size": 80
-                }, 
-                {
-                    "section": ".text", 
-                    "name": "__swsetup_r", 
-                    "size": 220
-                }, 
-                {
-                    "section": ".text", 
                     "name": "swi", 
                     "children": [
                         {
@@ -2044,646 +2707,6 @@ var size_map = {
                             ]
                         }
                     ]
-                }, 
-                {
-                    "section": ".text", 
-                    "name": "strlen", 
-                    "size": 16
-                }, 
-                {
-                    "section": ".text", 
-                    "name": "_putc_r", 
-                    "size": 144
-                }, 
-                {
-                    "section": ".text", 
-                    "name": "_siscanf_r", 
-                    "size": 84
-                }, 
-                {
-                    "section": ".text", 
-                    "name": "__gnu_Unwind_Backtrace", 
-                    "size": 112
-                }, 
-                {
-                    "section": ".text", 
-                    "name": "_Unwind_Complete", 
-                    "size": 2
-                }, 
-                {
-                    "section": ".text", 
-                    "name": "_getpid", 
-                    "size": 16
-                }, 
-                {
-                    "section": ".text", 
-                    "name": "__ssvfiscanf_r", 
-                    "size": 656
-                }, 
-                {
-                    "section": ".text", 
-                    "name": "__retarget_lock_release", 
-                    "size": 2
-                }, 
-                {
-                    "section": ".text", 
-                    "name": "fputc", 
-                    "size": 16
-                }, 
-                {
-                    "section": ".text", 
-                    "name": "_Unwind_Resume", 
-                    "size": 34
-                }, 
-                {
-                    "section": ".text", 
-                    "name": "__retarget_lock_acquire", 
-                    "size": 2
-                }, 
-                {
-                    "section": ".text", 
-                    "name": "__sfvwrite_r", 
-                    "size": 672
-                }, 
-                {
-                    "section": ".text", 
-                    "name": "__swbuf_r", 
-                    "size": 164
-                }, 
-                {
-                    "section": ".text", 
-                    "name": "_reclaim_reent", 
-                    "size": 184
-                }, 
-                {
-                    "section": ".text", 
-                    "name": "_strtol_l.isra.0", 
-                    "size": 240
-                }, 
-                {
-                    "section": ".text", 
-                    "name": "restore_non_core_regs", 
-                    "size": 88
-                }, 
-                {
-                    "section": ".text", 
-                    "name": "strtol_l", 
-                    "size": 20
-                }, 
-                {
-                    "section": ".text", 
-                    "name": "_Unwind_VRS_Pop", 
-                    "size": 632
-                }, 
-                {
-                    "section": ".text", 
-                    "name": "__sigtramp_r", 
-                    "size": 72
-                }, 
-                {
-                    "section": ".text", 
-                    "name": "_init_signal_r", 
-                    "size": 40
-                }, 
-                {
-                    "section": ".text", 
-                    "name": "__sinit", 
-                    "size": 112
-                }, 
-                {
-                    "section": ".text", 
-                    "name": "_sungetc_r", 
-                    "size": 122
-                }, 
-                {
-                    "section": ".text", 
-                    "name": "_close_r", 
-                    "size": 32
-                }, 
-                {
-                    "section": ".text", 
-                    "name": "puts", 
-                    "size": 16
-                }, 
-                {
-                    "section": ".text", 
-                    "name": "_fflush_r", 
-                    "size": 120
-                }, 
-                {
-                    "section": ".text", 
-                    "name": "_Unwind_GetLanguageSpecificData", 
-                    "size": 18
-                }, 
-                {
-                    "section": ".text", 
-                    "name": "__libc_init_array", 
-                    "size": 72
-                }, 
-                {
-                    "section": ".text", 
-                    "name": "__sfmoreglue", 
-                    "size": 44
-                }, 
-                {
-                    "section": ".text", 
-                    "name": "__seofread", 
-                    "size": 4
-                }, 
-                {
-                    "section": ".text", 
-                    "name": "_init_signal", 
-                    "size": 12
-                }, 
-                {
-                    "section": ".text", 
-                    "name": "_iprintf_r", 
-                    "size": 40
-                }, 
-                {
-                    "section": ".text", 
-                    "name": "__gnu_unwind_24bit.isra.1", 
-                    "size": 4
-                }, 
-                {
-                    "section": ".text", 
-                    "name": "__retarget_lock_init_recursive", 
-                    "size": 2
-                }, 
-                {
-                    "section": ".text", 
-                    "name": "get_eit_entry", 
-                    "size": 160
-                }, 
-                {
-                    "section": ".text", 
-                    "name": "__FUNCTION__.7518", 
-                    "size": 26
-                }, 
-                {
-                    "section": ".text", 
-                    "name": "__submore", 
-                    "size": 116
-                }, 
-                {
-                    "section": ".text", 
-                    "name": "__sinit_lock_release", 
-                    "size": 12
-                }, 
-                {
-                    "section": ".text", 
-                    "name": "__restore_core_regs", 
-                    "size": 24
-                }, 
-                {
-                    "section": ".text", 
-                    "name": "_malloc_r", 
-                    "size": 180
-                }, 
-                {
-                    "section": ".text", 
-                    "name": "__sfp_lock_release", 
-                    "size": 12
-                }, 
-                {
-                    "section": ".text", 
-                    "name": "_scanf_chars", 
-                    "size": 176
-                }, 
-                {
-                    "section": ".text", 
-                    "name": "__sigtramp", 
-                    "size": 16
-                }, 
-                {
-                    "section": ".text", 
-                    "name": "_printf_r", 
-                    "size": 40
-                }, 
-                {
-                    "section": ".text", 
-                    "name": "strtol", 
-                    "size": 20
-                }, 
-                {
-                    "section": ".text", 
-                    "name": "_fstat_r", 
-                    "size": 36
-                }, 
-                {
-                    "section": ".text", 
-                    "name": "__fp_lock_all", 
-                    "size": 28
-                }, 
-                {
-                    "section": ".text", 
-                    "name": "__aeabi_unwind_cpp_pr0", 
-                    "size": 4
-                }, 
-                {
-                    "section": ".text", 
-                    "name": "__gnu_unwind_execute", 
-                    "size": 710
-                }, 
-                {
-                    "section": ".text", 
-                    "name": "__sread", 
-                    "size": 34
-                }, 
-                {
-                    "section": ".text", 
-                    "name": "signal", 
-                    "size": 16
-                }, 
-                {
-                    "section": ".text", 
-                    "name": "__sseek", 
-                    "size": 36
-                }, 
-                {
-                    "section": ".text", 
-                    "name": "std", 
-                    "size": 72
-                }, 
-                {
-                    "section": ".text", 
-                    "name": "siscanf", 
-                    "size": 84
-                }, 
-                {
-                    "section": ".text", 
-                    "name": "_fwalk_reent", 
-                    "size": 60
-                }, 
-                {
-                    "section": ".text", 
-                    "name": "__gnu_Unwind_Resume", 
-                    "size": 68
-                }, 
-                {
-                    "section": ".text", 
-                    "name": "_Unwind_GetGR.constprop.0", 
-                    "size": 26
-                }, 
-                {
-                    "section": ".text", 
-                    "name": "__retarget_lock_release_recursive", 
-                    "size": 2
-                }, 
-                {
-                    "section": ".text", 
-                    "name": "__retarget_lock_acquire_recursive", 
-                    "size": 2
-                }, 
-                {
-                    "section": ".text", 
-                    "name": "_strtol_r", 
-                    "size": 4
-                }, 
-                {
-                    "section": ".text", 
-                    "name": "malloc", 
-                    "size": 16
-                }, 
-                {
-                    "section": ".text", 
-                    "name": "restore_core_regs", 
-                    "size": 24
-                }, 
-                {
-                    "section": ".text", 
-                    "name": "___Unwind_ForcedUnwind", 
-                    "size": 34
-                }, 
-                {
-                    "section": ".text", 
-                    "name": "strtoul_l", 
-                    "size": 20
-                }, 
-                {
-                    "section": ".text", 
-                    "name": "__sinit_lock_acquire", 
-                    "size": 12
-                }, 
-                {
-                    "section": ".text", 
-                    "name": "_Unwind_RaiseException", 
-                    "size": 34
-                }, 
-                {
-                    "section": ".text", 
-                    "name": "__fp_unlock", 
-                    "size": 24
-                }, 
-                {
-                    "section": ".text", 
-                    "name": "_Unwind_ForcedUnwind", 
-                    "size": 34
-                }, 
-                {
-                    "section": ".text", 
-                    "name": "strncpy", 
-                    "size": 38
-                }, 
-                {
-                    "section": ".text", 
-                    "name": "iprintf", 
-                    "size": 48
-                }, 
-                {
-                    "section": ".text", 
-                    "name": "__sflush_r", 
-                    "size": 268
-                }, 
-                {
-                    "section": ".text", 
-                    "name": "_cleanup", 
-                    "size": 12
-                }, 
-                {
-                    "section": ".text", 
-                    "name": "___Unwind_Resume_or_Rethrow", 
-                    "size": 34
-                }, 
-                {
-                    "section": ".text", 
-                    "name": "__malloc_lock", 
-                    "size": 12
-                }, 
-                {
-                    "section": ".text", 
-                    "name": "ungetc", 
-                    "size": 16
-                }, 
-                {
-                    "section": ".text", 
-                    "name": "__gnu_Unwind_ForcedUnwind", 
-                    "size": 18
-                }, 
-                {
-                    "section": ".text", 
-                    "name": "_Unwind_Backtrace", 
-                    "size": 34
-                }, 
-                {
-                    "section": ".text", 
-                    "name": "_sbrk_r", 
-                    "size": 32
-                }, 
-                {
-                    "section": ".text", 
-                    "name": "exit", 
-                    "size": 40
-                }, 
-                {
-                    "section": ".text", 
-                    "name": "__ssvfscanf_r", 
-                    "size": 656
-                }, 
-                {
-                    "section": ".text", 
-                    "name": "__retarget_lock_close", 
-                    "size": 2
-                }, 
-                {
-                    "section": ".text", 
-                    "name": "memset", 
-                    "size": 16
-                }, 
-                {
-                    "section": ".text", 
-                    "name": "unwind_phase2", 
-                    "size": 58
-                }, 
-                {
-                    "section": ".text", 
-                    "name": "__sccl", 
-                    "size": 100
-                }, 
-                {
-                    "section": ".text", 
-                    "name": "free", 
-                    "size": 16
-                }, 
-                {
-                    "section": ".text", 
-                    "name": "__retarget_lock_close_recursive", 
-                    "size": 2
-                }, 
-                {
-                    "section": ".text", 
-                    "name": "_sbrk", 
-                    "size": 28
-                }, 
-                {
-                    "section": ".text", 
-                    "name": "_getpid_r", 
-                    "size": 4
-                }, 
-                {
-                    "section": ".text", 
-                    "name": "_isatty_r", 
-                    "size": 32
-                }, 
-                {
-                    "section": ".text", 
-                    "name": "___Unwind_Backtrace", 
-                    "size": 34
-                }, 
-                {
-                    "section": ".text", 
-                    "name": "__FUNCTION__.8010", 
-                    "size": 34
-                }, 
-                {
-                    "section": ".text", 
-                    "name": "_printf_i", 
-                    "size": 552
-                }, 
-                {
-                    "section": ".text", 
-                    "name": "_Unwind_GetRegionStart", 
-                    "size": 10
-                }, 
-                {
-                    "section": ".text", 
-                    "name": "__gnu_Unwind_RaiseException", 
-                    "size": 94
-                }, 
-                {
-                    "section": ".text", 
-                    "name": "_read_r", 
-                    "size": 36
-                }, 
-                {
-                    "section": ".text", 
-                    "name": "_kill_r", 
-                    "size": 36
-                }, 
-                {
-                    "section": ".text", 
-                    "name": "fflush", 
-                    "size": 36
-                }, 
-                {
-                    "section": ".text", 
-                    "name": "next_unwind_byte", 
-                    "size": 54
-                }, 
-                {
-                    "section": ".text", 
-                    "name": "_Unwind_DeleteException", 
-                    "size": 12
-                }, 
-                {
-                    "section": ".text", 
-                    "name": "_vfiprintf_r", 
-                    "size": 592
-                }, 
-                {
-                    "section": ".text", 
-                    "name": "_Unwind_Resume_or_Rethrow", 
-                    "size": 34
-                }, 
-                {
-                    "section": ".text", 
-                    "name": "__FUNCTION__.7983", 
-                    "size": 23
-                }, 
-                {
-                    "section": ".text", 
-                    "name": "__swhatbuf_r", 
-                    "size": 72
-                }, 
-                {
-                    "section": ".text", 
-                    "name": "_strtoul_r", 
-                    "size": 4
-                }, 
-                {
-                    "section": ".text", 
-                    "name": "__sclose", 
-                    "size": 8
-                }, 
-                {
-                    "section": ".text", 
-                    "name": "__sfp_lock_acquire", 
-                    "size": 12
-                }, 
-                {
-                    "section": ".text", 
-                    "name": "__swbuf", 
-                    "size": 16
-                }, 
-                {
-                    "section": ".text", 
-                    "name": "__sfputs_r", 
-                    "size": 36
-                }, 
-                {
-                    "section": ".text", 
-                    "name": "_ungetc_r", 
-                    "size": 300
-                }, 
-                {
-                    "section": ".text", 
-                    "name": "_Unwind_DebugHook", 
-                    "size": 2
-                }, 
-                {
-                    "section": ".text", 
-                    "name": "__FUNCTION__.7970", 
-                    "size": 22
-                }, 
-                {
-                    "section": ".text", 
-                    "name": "_lseek_r", 
-                    "size": 36
-                }, 
-                {
-                    "section": ".text", 
-                    "name": "__fp_unlock_all", 
-                    "size": 28
-                }, 
-                {
-                    "section": ".text", 
-                    "name": "__sfp", 
-                    "size": 140
-                }, 
-                {
-                    "section": ".text", 
-                    "name": "_realloc_r", 
-                    "size": 76
-                }, 
-                {
-                    "section": ".text", 
-                    "name": "_Unwind_VRS_Get", 
-                    "size": 42
-                }, 
-                {
-                    "section": ".text", 
-                    "name": "_malloc_usable_size_r", 
-                    "size": 16
-                }, 
-                {
-                    "section": ".text", 
-                    "name": "_ctype_", 
-                    "size": 257
-                }, 
-                {
-                    "section": ".text", 
-                    "name": "_kill", 
-                    "size": 16
-                }, 
-                {
-                    "section": ".text", 
-                    "name": "vfprintf", 
-                    "size": 20
-                }, 
-                {
-                    "section": ".text", 
-                    "name": "_puts_r", 
-                    "size": 220
-                }, 
-                {
-                    "section": ".text", 
-                    "name": "___Unwind_Resume", 
-                    "size": 34
-                }, 
-                {
-                    "section": ".text", 
-                    "name": "_Unwind_VRS_Set", 
-                    "size": 42
-                }, 
-                {
-                    "section": ".text", 
-                    "name": "search_EIT_table", 
-                    "size": 98
-                }, 
-                {
-                    "section": ".text", 
-                    "name": "abort", 
-                    "size": 14
-                }, 
-                {
-                    "section": ".text", 
-                    "name": "_printf_common", 
-                    "size": 234
-                }, 
-                {
-                    "section": ".text", 
-                    "name": "strncmp", 
-                    "size": 36
-                }, 
-                {
-                    "section": ".text", 
-                    "name": "_free_r", 
-                    "size": 156
-                }, 
-                {
-                    "section": ".text", 
-                    "name": "__gnu_Unwind_Resume_or_Rethrow", 
-                    "size": 14
                 }
             ]
         }, 
@@ -2693,8 +2716,19 @@ var size_map = {
             "children": [
                 {
                     "section": ".uncached", 
-                    "name": "___start_veneer", 
-                    "size": 8
+                    "name": "<NO SOURCE>", 
+                    "children": [
+                        {
+                            "section": ".uncached", 
+                            "name": "___start_veneer", 
+                            "size": 8
+                        }, 
+                        {
+                            "section": ".uncached", 
+                            "name": "__rcclk_init_veneer", 
+                            "size": 8
+                        }
+                    ]
                 }, 
                 {
                     "section": ".uncached", 
@@ -2758,11 +2792,6 @@ var size_map = {
                             ]
                         }
                     ]
-                }, 
-                {
-                    "section": ".uncached", 
-                    "name": "__rcclk_init_veneer", 
-                    "size": 8
                 }
             ]
         }, 
@@ -3238,18 +3267,134 @@ var size_map = {
                 }, 
                 {
                     "section": ".bss", 
-                    "name": "idleTaskStack.6730", 
-                    "size": 2048
-                }, 
-                {
-                    "section": ".bss", 
-                    "name": "timerTaskTCB.6738", 
-                    "size": 128
-                }, 
-                {
-                    "section": ".bss", 
-                    "name": "xStaticTimerQueue.7331", 
-                    "size": 72
+                    "name": "<NO SOURCE>", 
+                    "children": [
+                        {
+                            "section": ".bss", 
+                            "name": "idleTaskStack.6730", 
+                            "size": 2048
+                        }, 
+                        {
+                            "section": ".bss", 
+                            "name": "timerTaskTCB.6738", 
+                            "size": 128
+                        }, 
+                        {
+                            "section": ".bss", 
+                            "name": "xStaticTimerQueue.7331", 
+                            "size": 72
+                        }, 
+                        {
+                            "section": ".bss", 
+                            "name": "__lock___sfp_recursive_mutex", 
+                            "size": 1
+                        }, 
+                        {
+                            "section": ".bss", 
+                            "name": "__lock___atexit_recursive_mutex", 
+                            "size": 1
+                        }, 
+                        {
+                            "section": ".bss", 
+                            "name": "xLastTime.7286", 
+                            "size": 4
+                        }, 
+                        {
+                            "section": ".bss", 
+                            "name": "__malloc_free_list", 
+                            "size": 4
+                        }, 
+                        {
+                            "section": ".bss", 
+                            "name": "__lock___at_quick_exit_mutex", 
+                            "size": 1
+                        }, 
+                        {
+                            "section": ".bss", 
+                            "name": "__lock___arc4random_mutex", 
+                            "size": 1
+                        }, 
+                        {
+                            "section": ".bss", 
+                            "name": "errno", 
+                            "size": 4
+                        }, 
+                        {
+                            "section": ".bss", 
+                            "name": "idleTaskTCB.6731", 
+                            "size": 128
+                        }, 
+                        {
+                            "section": ".bss", 
+                            "name": "__lock___malloc_recursive_mutex", 
+                            "size": 1
+                        }, 
+                        {
+                            "section": ".bss", 
+                            "name": "completed.8879", 
+                            "size": 1
+                        }, 
+                        {
+                            "section": ".bss", 
+                            "name": "__lock___tz_mutex", 
+                            "size": 1
+                        }, 
+                        {
+                            "section": ".bss", 
+                            "name": "ucStaticTimerQueueStorage.7332", 
+                            "size": 60
+                        }, 
+                        {
+                            "section": ".bss", 
+                            "name": "GP_Timer_cnt", 
+                            "size": 4
+                        }, 
+                        {
+                            "section": ".bss", 
+                            "name": "__malloc_sbrk_start", 
+                            "size": 4
+                        }, 
+                        {
+                            "section": ".bss", 
+                            "name": "__lock___dd_hash_mutex", 
+                            "size": 1
+                        }, 
+                        {
+                            "section": ".bss", 
+                            "name": "heap_end.4194", 
+                            "size": 4
+                        }, 
+                        {
+                            "section": ".bss", 
+                            "name": "__lock___sinit_recursive_mutex", 
+                            "size": 1
+                        }, 
+                        {
+                            "section": ".bss", 
+                            "name": "Ticks", 
+                            "size": 4
+                        }, 
+                        {
+                            "section": ".bss", 
+                            "name": "__lock___env_recursive_mutex", 
+                            "size": 1
+                        }, 
+                        {
+                            "section": ".bss", 
+                            "name": "object.8884", 
+                            "size": 24
+                        }, 
+                        {
+                            "section": ".bss", 
+                            "name": "indication.8131", 
+                            "size": 1
+                        }, 
+                        {
+                            "section": ".bss", 
+                            "name": "timerTaskStack.6737", 
+                            "size": 4096
+                        }
+                    ]
                 }, 
                 {
                     "section": ".bss", 
@@ -3289,116 +3434,6 @@ var size_map = {
                             ]
                         }
                     ]
-                }, 
-                {
-                    "section": ".bss", 
-                    "name": "__lock___sfp_recursive_mutex", 
-                    "size": 1
-                }, 
-                {
-                    "section": ".bss", 
-                    "name": "__lock___atexit_recursive_mutex", 
-                    "size": 1
-                }, 
-                {
-                    "section": ".bss", 
-                    "name": "xLastTime.7286", 
-                    "size": 4
-                }, 
-                {
-                    "section": ".bss", 
-                    "name": "__malloc_free_list", 
-                    "size": 4
-                }, 
-                {
-                    "section": ".bss", 
-                    "name": "__lock___at_quick_exit_mutex", 
-                    "size": 1
-                }, 
-                {
-                    "section": ".bss", 
-                    "name": "__lock___arc4random_mutex", 
-                    "size": 1
-                }, 
-                {
-                    "section": ".bss", 
-                    "name": "errno", 
-                    "size": 4
-                }, 
-                {
-                    "section": ".bss", 
-                    "name": "idleTaskTCB.6731", 
-                    "size": 128
-                }, 
-                {
-                    "section": ".bss", 
-                    "name": "__lock___malloc_recursive_mutex", 
-                    "size": 1
-                }, 
-                {
-                    "section": ".bss", 
-                    "name": "completed.8879", 
-                    "size": 1
-                }, 
-                {
-                    "section": ".bss", 
-                    "name": "__lock___tz_mutex", 
-                    "size": 1
-                }, 
-                {
-                    "section": ".bss", 
-                    "name": "ucStaticTimerQueueStorage.7332", 
-                    "size": 60
-                }, 
-                {
-                    "section": ".bss", 
-                    "name": "GP_Timer_cnt", 
-                    "size": 4
-                }, 
-                {
-                    "section": ".bss", 
-                    "name": "__malloc_sbrk_start", 
-                    "size": 4
-                }, 
-                {
-                    "section": ".bss", 
-                    "name": "__lock___dd_hash_mutex", 
-                    "size": 1
-                }, 
-                {
-                    "section": ".bss", 
-                    "name": "heap_end.4194", 
-                    "size": 4
-                }, 
-                {
-                    "section": ".bss", 
-                    "name": "__lock___sinit_recursive_mutex", 
-                    "size": 1
-                }, 
-                {
-                    "section": ".bss", 
-                    "name": "Ticks", 
-                    "size": 4
-                }, 
-                {
-                    "section": ".bss", 
-                    "name": "__lock___env_recursive_mutex", 
-                    "size": 1
-                }, 
-                {
-                    "section": ".bss", 
-                    "name": "object.8884", 
-                    "size": 24
-                }, 
-                {
-                    "section": ".bss", 
-                    "name": "indication.8131", 
-                    "size": 1
-                }, 
-                {
-                    "section": ".bss", 
-                    "name": "timerTaskStack.6737", 
-                    "size": 4096
                 }
             ]
         }, 
@@ -3512,18 +3547,24 @@ var size_map = {
                 }, 
                 {
                     "section": ".data", 
-                    "name": "_impure_ptr", 
-                    "size": 4
-                }, 
-                {
-                    "section": ".data", 
-                    "name": "SystemCoreClock", 
-                    "size": 4
-                }, 
-                {
-                    "section": ".data", 
-                    "name": "impure_data", 
-                    "size": 96
+                    "name": "<NO SOURCE>", 
+                    "children": [
+                        {
+                            "section": ".data", 
+                            "name": "_impure_ptr", 
+                            "size": 4
+                        }, 
+                        {
+                            "section": ".data", 
+                            "name": "SystemCoreClock", 
+                            "size": 4
+                        }, 
+                        {
+                            "section": ".data", 
+                            "name": "impure_data", 
+                            "size": 96
+                        }
+                    ]
                 }, 
                 {
                     "section": ".data", 

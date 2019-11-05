@@ -36,7 +36,7 @@ optional arguments:
 Details
 -------
  * `--device DEVICE`: Specify the target device/environment of the build.  The current options are
-   **alt1250-map** (the default) and **alt1250-mcu**.
+   **alt1250-map** (the default), **alt1250-mcu**, **mdm9x07-apss-tx**, and **mdm9x05-apss-tx**.
  * `--tools TOOLS`: Provide the base directory to search for the target-specific tools necessary for
    analysing the binaries.  For example, for a GNU toolchain, this is where `nm` and `addr2line` can
    be found.
@@ -66,13 +66,19 @@ This script may be extended to add new device toolchains and output generators.
 To add a new toolchain and device type, subclass Toolchain or one of its decendents, and ensure the
 necessary methods are implemented:
 
- * `scan`
  * `build_info`
  * `resolve`
+ * `scan`
+
+In addition, the following class variables need to be set:
+
+ * `device`: The device type (e.g. "alt1250-map") that would be passed from the command line.
+ * `ram`: A list of ELF sections that exclusively occupy space in RAM (e.g. ".bss").
+ * `rom`: A list of ELF sections that exclusively occupy space in ROM (e.g. ".text").
+ * `ram_and_rom`: A list of ELF sections that occupy space in both RAM and ROM (e.g. ".data").
 
 See the implementations of `GNUToolchain` and `ALT1250MAPToolchain` for examples.  To use the
-toolchain, add an `elif` statement testing for the new device type and instantiating the toolchain
-class in `find_toolchain()`.
+toolchain, add the toolchain class to the list in `find_toolchain()`.
 
 To add a new output provider, subclass Output or one of its decendents, and ensure the necessary
 methods are implemented:

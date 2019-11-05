@@ -8,31 +8,16 @@ var b = {
   w: 100, h: 30, s: 3, t: 10
 };
 
-var ram_colour  = "#5499C7";
-var rom_colour  = "#7D3C98";
-var both_colour = "#16A085";
-var root_colour = "#BDC3C7";
+// Device name.
+var device = summary_map['Device'];
 
-// Mapping of step names to colors.
-var colors = {
-  ".bss":               ram_colour,
-  ".heap":              ram_colour,
-  ".sbss":              ram_colour,
-  ".stack_dummy":       ram_colour,
-
-  ".exception_vector":  both_colour,
-  ".ram_text":          both_colour,
-  ".uncached":          both_colour,
-
-  ".data":              both_colour,
-  ".sdata":             both_colour,
-
-  ".rodata":            rom_colour,
-  ".rodatafiller":      rom_colour,
-  ".text":              rom_colour,
-
-  "<root>":             root_colour
+// Colours for memory types.
+var colours = {
+  'RAM':      "#5499C7",
+  'ROM':      "#7D3C98",
+  'RAM+ROM':  "#16A085"
 };
+colours[device] = "#BDC3C7";
 
 var x = d3.scale.linear()
     .range([0, 2 * Math.PI]);
@@ -61,6 +46,25 @@ var arc = d3.svg.arc()
     .innerRadius(function(d) { return Math.max(0, y(d.y)); })
     .outerRadius(function(d) { return Math.max(0, y(d.y + d.dy)); });
 
+function sectionColour(d) {
+  if (section_types['RAM'].includes(d.section))
+  {
+    return colours['RAM'];
+  }
+  else if (section_types['ROM'].includes(d.section))
+  {
+    return colours['ROM'];
+  }
+  else if (section_types['RAM+ROM'].includes(d.section))
+  {
+    return colours['RAM+ROM'];
+  }
+  else
+  {
+    return colours[summary_map['Device']];
+  }
+}
+
 function renderSunburst(json) {
   // Basic setup of page elements.
   initializeBreadcrumbTrail();
@@ -83,9 +87,7 @@ function renderSunburst(json) {
       .enter().append("svg:path")
       .attr("d", arc)
       .attr("fill-rule", "evenodd")
-      .style("fill", function(d) {
-          return colors[d.section];
-       })
+      .style("fill", sectionColour)
       .style("opacity", 1)
       .on("mouseover", mouseover)
       .on("click", click);
@@ -132,10 +134,6 @@ function renderSummary(json) {
 }
 
 function render() {
-  var device = summary_map['Device'];
-  colors[device] = colors['<root>'];
-  delete colors['<root>'];
-
   var title = d3.select('title');
   title.text(device.toUpperCase() + " Binary Size Analysis");
 
@@ -270,9 +268,7 @@ function updateBreadcrumbs(nodeArray, percentageString) {
 
   entering.append("svg:polygon")
       .attr("points", breadcrumbPoints)
-      .style("fill", function(d) {
-          return colors[d.section];
-       })
+      .style("fill", sectionColour)
       .style("cursor", "pointer")
       .on("click", function(d) { click(d); mouseover(d); });
 
@@ -316,10 +312,10 @@ function drawLegend() {
 
   var legend = d3.select("#legend").append("svg:svg")
       .attr("width", li.w)
-      .attr("height", d3.keys(colors).length * (li.h + li.s));
+      .attr("height", d3.keys(colours).length * (li.h + li.s));
 
   var g = legend.selectAll("g")
-      .data(d3.entries(colors))
+      .data(d3.entries(colours))
       .enter().append("svg:g")
       .attr("transform", function(d, i) {
               return "translate(0," + i * (li.h + li.s) + ")";

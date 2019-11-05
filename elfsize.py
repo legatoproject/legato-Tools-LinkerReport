@@ -11,36 +11,16 @@ import argparse
 import json
 import os
 import re
+import string
 import sys
 import time
 import webbrowser
-
-# Linker sections that consume space in RAM.
-RAM_SECTIONS = [
-    ".bss",
-    ".heap",
-    ".sbss",
-    ".stack_dummy"
-]
-# Linker sections that consume space in ROM.
-ROM_SECTIONS = [
-    ".rodata",
-    ".rodatafiller",
-    ".text"
-]
-# Linker sections that consume space in both RAM and ROM.
-BOTH_SECTIONS = [
-    ".data",
-    ".exception_vector",
-    ".ram_text",
-    ".sdata",
-    ".uncached"
-]
+import xml.etree.ElementTree as ET
 
 class Output(object):
     """Symbol data formatter."""
-    def __init__(self, device, fd):
-        self.device = device
+    def __init__(self, toolchain, fd):
+        self.toolchain = toolchain
         self.fd = fd
         self.filename = os.path.abspath(self.fd.name)
 
@@ -51,8 +31,8 @@ class Output(object):
 
 class JSOutput(Output):
     """Output to JavaScript suitable for d3.js visualisations."""
-    def __init__(self, device, fd, browser = False, also_csv = False):
-        super(JSOutput, self).__init__(device, fd)
+    def __init__(self, toolchain, fd, browser = False, also_csv = False):
+        super(JSOutput, self).__init__(toolchain, fd)
         self.browser = browser
         self.also_csv = also_csv
 
@@ -80,14 +60,19 @@ class JSOutput(Output):
             'RAM': 0,
             'ROM': 0,
             'RAM+ROM': 0,
-            'Device': self.device,
+            'Device': self.toolchain.device,
             'CSV': self.also_csv,
             'Build': build_info
         }
+        section_types = {
+            'RAM': self.toolchain.ram,
+            'ROM': self.toolchain.rom,
+            'RAM+ROM': self.toolchain.ram_and_rom
+        }
 
         root = {
-            'name': self.device,
-            'section': self.device,
+            'name': self.toolchain.device,
+            'section': self.toolchain.device,
             'children': []
         }
         for symbol in symbols.values():
@@ -98,14 +83,19 @@ class JSOutput(Output):
             }
             self.add_leaf(root, symbol['path'], leaf)
 
-            if symbol['section'] in RAM_SECTIONS:
+            if symbol['section'] in self.toolchain.ram:
                 summary['RAM'] += symbol['size']
-            elif symbol['section'] in ROM_SECTIONS:
+            elif symbol['section'] in self.toolchain.rom:
                 summary['ROM'] += symbol['size']
-            elif symbol['section'] in BOTH_SECTIONS:
+            elif symbol['section'] in self.toolchain.ram_and_rom:
                 summary['RAM+ROM'] += symbol['size']
 
         self.fd.seek(0)
+        self.fd.write("// Automatically generated file; do not edit.\n")
+
+        self.fd.write("var section_types = ")
+        json.dump(section_types, self.fd, indent=4)
+        self.fd.write("\n")
 
         self.fd.write("var summary_map = ")
         json.dump(summary, self.fd, indent=4)
@@ -125,8 +115,8 @@ class JSOutput(Output):
 
 class CSVOutput(Output):
     """Output to CSV for spreadsheet import."""
-    def __init__(self, device, fd):
-        super(CSVOutput, self).__init__(device, fd)
+    def __init__(self, toolchain, fd):
+        super(CSVOutput, self).__init__(toolchain, fd)
 
     def writeline(self, name, address, size, section, file, line, **kwargs):
         """Write one symbol's information as a CSV line."""
@@ -201,11 +191,18 @@ class GNUToolchain(Toolchain):
         except ValueError:
             symbol['line'] = 0
 
+    def format_section(self, raw_section):
+        """Format the raw section name for symbol categorisation."""
+        if "." in raw_section:
+            return "." + raw_section.split('.')[1]
+        return None
+
     def to_symbol(self, line):
         """Convert an nm line to a symbol dictionary."""
         l = [x.strip() for x in re.split(r"\||\t", line.strip())]
 
-        if "." not in l[6]:
+        section = self.format_section(l[6])
+        if section is None:
             return None
 
         try:
@@ -216,7 +213,7 @@ class GNUToolchain(Toolchain):
         symbol = {
             'name': l[0],
             'address': l[1],
-            'section': "." + l[6].split('.')[1],
+            'section': section,
             'file': l[7] if len(l) > 7 else None,
             'line': 0,
             'size': node_size,
@@ -259,17 +256,23 @@ class GNUToolchain(Toolchain):
 
     def resolve(self, binaries, symbols):
         """Resolve initial symbol information to paths."""
-        cmd = [self.addr2line, "-ie", binaries[0]]
+        cmd = [self.addr2line, "-fpie", binaries[0]]
         print("    " + " ".join(cmd))
         addr2line = Popen(cmd, stdout=PIPE, stdin=PIPE)
 
         for symbol in symbols.values():
             if symbol['file'] is None:
                 addr2line.stdin.write(symbol['address'] + "\n")
-                sym_file = addr2line.stdout.readline()
-                self.set_file_for_symbol(symbol, sym_file)
+                line = addr2line.stdout.readline()
+                parts = line.split(" at ")
+                if parts[0] == symbol['name']:
+                    self.set_file_for_symbol(symbol, parts[1])
+                else:
+                    # print("[DEBUG] addr2line resolved incorrect location for {0}: {1}"
+                    #     .format(symbol['name'], line.strip()))
+                    symbol['file'] = "??"
 
-            if symbol['file'] == "??":
+            if not symbol['file'] or symbol['file'] == "??":
                 self.set_file_for_symbol(symbol, "<NO SOURCE>:0")
 
             symbol['path'] = self.to_path(symbol)
@@ -279,6 +282,11 @@ class GNUToolchain(Toolchain):
 
 class ALT1250MAPToolchain(GNUToolchain):
     """ELF binary analyser using GNU toolchain for ALT1250 MAP Core."""
+    device = "alt1250-map"
+    ram = [".bss", ".sbss"]
+    rom = [".rodata", ".rodatafiller", ".text"]
+    ram_and_rom = [".data", ".exception_vector", ".ram_text", ".sdata"]
+
     def __init__(self, base, prefix = "mips-mti-elf-"):
         super(ALT1250MAPToolchain, self).__init__(base, prefix)
 
@@ -306,8 +314,122 @@ class ALT1250MAPToolchain(GNUToolchain):
 
 class ALT1250MCUToolchain(GNUToolchain):
     """ELF binary analyser using GNU toolchain for ALT1250 MCU Core."""
+    device = "alt1250-mcu"
+    ram = [".bss", ".heap", ".stack_dummy"]
+    rom = [".rodata", ".rodatafiller", ".text"]
+    ram_and_rom = [".data", ".uncached"]
+
     def __init__(self, base, prefix = "arm-none-eabi-"):
         super(ALT1250MCUToolchain, self).__init__(base, prefix)
+
+class MDM9x07APSSToolchain(GNUToolchain):
+    """
+    ELF binary analyser for the output of the ARM RVCT toolchain for the MDM9x07's APSS.  Note that
+    this "toolchain" doesn't actually use the ARM RVCT "fromelf" tool as it doesn't provide all of
+    the necessary information.  Rather, the GNU tools are used since they can also read the ELF
+    format.
+    """
+    device = "mdm9x07-apss-tx"
+    ram = ["ZI_REGION"]
+    rom = []
+    ram_and_rom = ["APP_RAM", "MAIN_APP_1"]
+
+    def __init__(self, base, prefix = "arm-none-eabi-"):
+        super(MDM9x07APSSToolchain, self).__init__(base, prefix)
+
+    def set_file_for_symbol(self, symbol, pth):
+        """Collect the file path for a symbol."""
+        if '\\' in pth:
+            if pth[0] in string.ascii_uppercase and pth[1] == ':':
+                pth = "/" + pth[0] + pth[2:]
+            pth = pth.replace('\\', '/')
+
+        while pth.startswith("../"):
+            pth = pth[2:]
+
+        super(MDM9x07APSSToolchain, self).set_file_for_symbol(symbol, pth)
+
+    def format_section(self, raw_section):
+        """Format the raw section name for symbol categorisation."""
+        if raw_section in self.ram + self.rom + self.ram_and_rom:
+            return raw_section
+        return None
+
+    def resolve(self, binaries, symbols):
+        """Resolve initial symbol information to paths using the linker's map file."""
+        map_path = os.path.join(os.path.dirname(binaries[0]),
+            "../bsp/apps_proc_img/build/ACDNAAAZ/APPS_PROC_ACDNAAAZA.map")
+
+        object_map = {}
+        if os.access(map_path, os.R_OK):
+            expr = re.compile(
+                    r'^\s{4}(.*)\s+0x([0-9a-f]{8})\s+(?:Thumb Code|Data)\s+(\d+)\s+(.*\.o)\(.*$')
+            with open(map_path, "r") as map_file:
+                for line in map_file:
+                    m = expr.match(line)
+                    if m:
+                        object_map[m.group(2)] = {
+                            'address': m.group(2),
+                            'symbol': m.group(1).strip(),
+                            'size': int(m.group(3)),
+                            'object': m.group(4).strip()
+                        }
+
+        for symbol in symbols.values():
+            if symbol['file'] is None:
+                obj_info = object_map.get(symbol['address'])
+                if obj_info is not None and obj_info['size'] == symbol['size'] and \
+                    obj_info['symbol'] == symbol['name']:
+
+                    self.set_file_for_symbol(symbol, obj_info['object'])
+                else:
+                    self.set_file_for_symbol(symbol, "<NO SOURCE>:0")
+
+            symbol['path'] = self.to_path(symbol)
+
+    def to_info(self, line, info):
+        """Convert an le_config line to an info key/value pair."""
+        l = line.split(' ')
+        if len(l) > 2:
+            entry = {
+                'name': l[1],
+                'value': " ".join(l[2:]).strip().strip('"')
+            }
+            info.append(entry)
+
+    def build_info(self, binaries):
+        """Pull Legato version and APSS build ID from various places."""
+        info = super(MDM9x07APSSToolchain, self).build_info(binaries)
+        manifest_path = os.path.join(os.path.dirname(binaries[0]), "../manifest.xml")
+        le_config_path = os.path.join(os.path.dirname(binaries[0]),
+            "../../../../legato/build/gill/framework/include/le_config.h")
+
+        if os.access(manifest_path, os.R_OK):
+            tree = ET.parse(manifest_path)
+            node = tree.getroot().find("./image_tree/build_id")
+            if node is not None:
+                entry = {
+                    'name': "Build ID",
+                    'value': node.text
+                }
+                info.append(entry)
+
+        if os.access(le_config_path, os.R_OK):
+            with open(le_config_path, "r") as le_config:
+                for line in le_config:
+                    if line.startswith("#define LE_VERSION ") or \
+                        line.startswith("#define LE_TARGET "):
+                        self.to_info(line, info)
+        return info
+
+class MDM9x05APSSToolchain(GNUToolchain):
+    """
+    ELF binary analyser for the output of the ARM RVCT toolchain for the MDM9x05's APSS.
+    """
+    device = "mdm9x05-apss-tx"
+
+    def __init__(self, base, prefix = "arm-none-eabi-"):
+        super(MDM9x05APSSToolchain, self).__init__(base, prefix)
 
 def analyse(toolchain, binaries, outputs):
     """
@@ -327,20 +449,25 @@ def analyse(toolchain, binaries, outputs):
 
 def find_toolchain(args):
     """Map device types to toolchains."""
-    if args.device == "alt1250-map":
-        return ALT1250MAPToolchain(args.tools)
-    elif args.device == "alt1250-mcu":
-        return ALT1250MCUToolchain(args.tools)
+    toolchains = [
+        ALT1250MAPToolchain,
+        ALT1250MCUToolchain,
+        MDM9x07APSSToolchain,
+        MDM9x05APSSToolchain
+    ]
+    for toolchain in toolchains:
+        if args.device == toolchain.device:
+            return toolchain(args.tools)
     return None
 
-def get_outputs(args):
+def get_outputs(args, toolchain):
     """Instantiate output providers based on command line arguments."""
     outputs = {}
     if args.js:
-        outputs['js'] = JSOutput(args.device, args.js, browser = args.browser,
+        outputs['js'] = JSOutput(toolchain, args.js, browser = args.browser,
             also_csv = bool(args.csv))
     if args.csv:
-        outputs['csv'] = CSVOutput(args.device, args.csv)
+        outputs['csv'] = CSVOutput(toolchain, args.csv)
     return outputs
 
 def main():
@@ -366,7 +493,7 @@ def main():
     # get and validate arguments
     args = parser.parse_args()
     toolchain = find_toolchain(args)
-    outputs = get_outputs(args)
+    outputs = get_outputs(args, toolchain)
 
     if not toolchain:
         print("[ERROR] no toolchain specified")
