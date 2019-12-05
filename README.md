@@ -20,7 +20,9 @@ Analyse binaries and generate static memory usage reports.
 optional arguments:
   -h, --help            show this help message and exit
   -d DEVICE, --device DEVICE
-                        target device and build environment.
+                        target device and build environment. Supported
+                        devices: alt1250-map, alt1250-mcu, mdm9x07-apss-tx,
+                        mdm9x05-apss-tx.
   -t TOOLS, --tools TOOLS
                         base path at which to find toolchain executables.
   -j JS, --js JS        path of output JavaScript file.
@@ -78,7 +80,7 @@ In addition, the following class variables need to be set:
  * `ram_and_rom`: A list of ELF sections that occupy space in both RAM and ROM (e.g. ".data").
 
 See the implementations of `GNUToolchain` and `ALT1250MAPToolchain` for examples.  To use the
-toolchain, add the toolchain class to the list in `find_toolchain()`.
+toolchain, add the its class to the `_toolchains` list.
 
 To add a new output provider, subclass Output or one of its decendents, and ensure the necessary
 methods are implemented:

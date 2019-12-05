@@ -431,6 +431,14 @@ class MDM9x05APSSToolchain(GNUToolchain):
     def __init__(self, base, prefix = "arm-none-eabi-"):
         super(MDM9x05APSSToolchain, self).__init__(base, prefix)
 
+# List of supported toolchains/environments.
+_toolchains = [
+    ALT1250MAPToolchain,
+    ALT1250MCUToolchain,
+    MDM9x07APSSToolchain,
+    MDM9x05APSSToolchain
+]
+
 def analyse(toolchain, binaries, outputs):
     """
     Scan the binaries and collect symbol information before outputing it in the selected
@@ -449,16 +457,14 @@ def analyse(toolchain, binaries, outputs):
 
 def find_toolchain(args):
     """Map device types to toolchains."""
-    toolchains = [
-        ALT1250MAPToolchain,
-        ALT1250MCUToolchain,
-        MDM9x07APSSToolchain,
-        MDM9x05APSSToolchain
-    ]
-    for toolchain in toolchains:
+    for toolchain in _toolchains:
         if args.device == toolchain.device:
             return toolchain(args.tools)
     return None
+
+def list_devices():
+    """List the supported environments."""
+    return ", ".join([t.device for t in _toolchains])
 
 def get_outputs(args, toolchain):
     """Instantiate output providers based on command line arguments."""
@@ -477,7 +483,8 @@ def main():
 
     # specify arguments
     parser.add_argument('-d', '--device',       type = str, default = "alt1250-map",
-                        help = 'target device and build environment.')
+                        help = 'target device and build environment.  \
+                        Supported devices: {0}.'.format(list_devices()))
     parser.add_argument('-t', '--tools',        type = str, default = "",
                         help = 'base path at which to find toolchain executables.')
     parser.add_argument('-j', '--js',           type = argparse.FileType('w'),
