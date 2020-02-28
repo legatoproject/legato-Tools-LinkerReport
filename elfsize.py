@@ -322,20 +322,22 @@ class ALT1250MCUToolchain(GNUToolchain):
     def __init__(self, base, prefix = "arm-none-eabi-"):
         super(ALT1250MCUToolchain, self).__init__(base, prefix)
 
-class MDM9x07APSSToolchain(GNUToolchain):
+class MDM9xAPSSToolchain(GNUToolchain):
     """
     ELF binary analyser for the output of the ARM RVCT toolchain for the MDM9x07's APSS.  Note that
     this "toolchain" doesn't actually use the ARM RVCT "fromelf" tool as it doesn't provide all of
     the necessary information.  Rather, the GNU tools are used since they can also read the ELF
     format.
     """
-    device = "mdm9x07-apss-tx"
-    ram = ["ZI_REGION"]
+    ram = []
     rom = []
-    ram_and_rom = ["APP_RAM", "MAIN_APP_1"]
+    ram_and_rom = []
+    device = ""
+    map_path = ""
+    le_config_path = ""
 
     def __init__(self, base, prefix = "arm-none-eabi-"):
-        super(MDM9x07APSSToolchain, self).__init__(base, prefix)
+        super(MDM9xAPSSToolchain, self).__init__(base, prefix)
 
     def set_file_for_symbol(self, symbol, pth):
         """Collect the file path for a symbol."""
@@ -347,7 +349,7 @@ class MDM9x07APSSToolchain(GNUToolchain):
         while pth.startswith("../"):
             pth = pth[2:]
 
-        super(MDM9x07APSSToolchain, self).set_file_for_symbol(symbol, pth)
+        super(MDM9xAPSSToolchain, self).set_file_for_symbol(symbol, pth)
 
     def format_section(self, raw_section):
         """Format the raw section name for symbol categorisation."""
@@ -357,14 +359,13 @@ class MDM9x07APSSToolchain(GNUToolchain):
 
     def resolve(self, binaries, symbols):
         """Resolve initial symbol information to paths using the linker's map file."""
-        map_path = os.path.join(os.path.dirname(binaries[0]),
-            "../bsp/apps_proc_img/build/ACDNAAAZ/APPS_PROC_ACDNAAAZA.map")
+        map_full_path = os.path.join(os.path.dirname(binaries[0]), self.map_path)
 
         object_map = {}
-        if os.access(map_path, os.R_OK):
+        if os.access(map_full_path, os.R_OK):
             expr = re.compile(
                     r'^\s{4}(.*)\s+0x([0-9a-f]{8})\s+(?:Thumb Code|Data)\s+(\d+)\s+(.*\.o)\(.*$')
-            with open(map_path, "r") as map_file:
+            with open(map_full_path, "r") as map_file:
                 for line in map_file:
                     m = expr.match(line)
                     if m:
@@ -399,10 +400,9 @@ class MDM9x07APSSToolchain(GNUToolchain):
 
     def build_info(self, binaries):
         """Pull Legato version and APSS build ID from various places."""
-        info = super(MDM9x07APSSToolchain, self).build_info(binaries)
+        info = super(MDM9xAPSSToolchain, self).build_info(binaries)
         manifest_path = os.path.join(os.path.dirname(binaries[0]), "../manifest.xml")
-        le_config_path = os.path.join(os.path.dirname(binaries[0]),
-            "../../../../legato/build/gill/framework/include/le_config.h")
+        le_config = os.path.join(os.path.dirname(binaries[0]), self.le_config_path)
 
         if os.access(manifest_path, os.R_OK):
             tree = ET.parse(manifest_path)
@@ -414,19 +414,38 @@ class MDM9x07APSSToolchain(GNUToolchain):
                 }
                 info.append(entry)
 
-        if os.access(le_config_path, os.R_OK):
-            with open(le_config_path, "r") as le_config:
+        if os.access(le_config, os.R_OK):
+            with open(le_config, "r") as le_config:
                 for line in le_config:
                     if line.startswith("#define LE_VERSION ") or \
                         line.startswith("#define LE_TARGET "):
                         self.to_info(line, info)
         return info
 
-class MDM9x05APSSToolchain(GNUToolchain):
+class MDM9x07APSSToolchain(MDM9xAPSSToolchain):
     """
     ELF binary analyser for the output of the ARM RVCT toolchain for the MDM9x05's APSS.
     """
+    ram = ["ZI_REGION"]
+    rom = []
+    ram_and_rom = ["APP_RAM", "MAIN_APP_1"]
+    device = "mdm9x07-apss-tx"
+    map_path = "../bsp/apps_proc_img/build/ACDNAAAZ/APPS_PROC_ACDNAAAZA.map"
+    le_config_path = "../../../../legato/build/gill/framework/include/le_config.h"
+
+    def __init__(self, base, prefix = "arm-none-eabi-"):
+        super(MDM9x07APSSToolchain, self).__init__(base, prefix)
+
+class MDM9x05APSSToolchain(MDM9xAPSSToolchain):
+    """
+    ELF binary analyser for the output of the ARM RVCT toolchain for the MDM9x07's APSS.
+    """
+    ram = ["ZI_REGION"]
+    rom = []
+    ram_and_rom = ["APP_RAM", "MAIN_APP_1"]
     device = "mdm9x05-apss-tx"
+    map_path = "../bsp/apps_proc_img/build/ACFNAAMZ/APPS_PROC_ACFNAAMZA.map"
+    le_config_path = "../../../../legato/build/rc51/framework/include/le_config.h"
 
     def __init__(self, base, prefix = "arm-none-eabi-"):
         super(MDM9x05APSSToolchain, self).__init__(base, prefix)
