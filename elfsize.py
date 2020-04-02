@@ -237,7 +237,7 @@ class GNUToolchain(Toolchain):
                 # run nm command on binary
                 cmd = [self.nm, "-lSCf", "sysv", binary]
                 print("    " + " ".join(cmd))
-                scan_file.write(check_output(cmd).strip() + "\n\n")
+                scan_file.write(check_output(cmd).strip().decode() + "\n\n")
 
             print("[INFO] collecting symbols...")
             scan_file.seek(0)
@@ -262,9 +262,10 @@ class GNUToolchain(Toolchain):
 
         for symbol in symbols.values():
             if symbol['file'] is None:
-                addr2line.stdin.write(symbol['address'] + "\n")
+                addr2line.stdin.write((symbol['address'] + "\n").encode())
+                addr2line.stdin.flush()
                 line = addr2line.stdout.readline()
-                parts = line.split(" at ")
+                parts = line.split(b" at ")
                 if parts[0] == symbol['name']:
                     self.set_file_for_symbol(symbol, parts[1])
                 else:
