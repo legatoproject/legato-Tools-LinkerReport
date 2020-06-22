@@ -47,6 +47,9 @@ class JSOutput(Output):
 
     def add_leaf(self, parent, pth, leaf):
         """Add a leaf node to the JS symbol tree."""
+        if 'legato' in leaf and leaf['legato']:
+            parent['legato'] = True
+
         if not pth:
             parent['children'].append(leaf)
         else:
@@ -90,6 +93,9 @@ class JSOutput(Output):
                 'size': symbol['size'],
                 'section': symbol['section']
             }
+            if "legato" in symbol and symbol['legato']:
+                leaf['legato'] = True
+
             self.add_leaf(root, symbol['path'], leaf)
 
             if symbol['section'] in self.toolchain.ram:
@@ -194,6 +200,9 @@ class Toolchain(object):
 class QTIToolchain(Toolchain):
     """ELF binary analyzer using ELFTools."""
     def __init__(self, base):
+        if not HaveElfTools:
+            raise RuntimeError("python3-elftools required for QTI toolchains")
+
         super(QTIToolchain, self).__init__(base)
 
     def set_file_for_symbol(self, symbol, pth):
@@ -527,6 +536,9 @@ class QTIToolchain(Toolchain):
 
             symbol['path'] = self.to_path(symbol)
 
+            if ('legato' in symbol['path'] or 'frameworkAdaptor' in symbol['path']):
+                symbol['legato'] = True
+
 
 class GNUToolchain(Toolchain):
     """ELF binary analyser using GNU toolchain."""
@@ -784,13 +796,9 @@ class MDM9x05APSSToolchain(MDM9xAPSSToolchain):
 # List of supported toolchains/environments.
 _toolchains = [
     ALT1250MAPToolchain,
-    ALT1250MCUToolchain
-]
-
-if HaveElfTools:
-    _toolchains.extend([MDM9x07APSSToolchain,
-                        MDM9x05APSSToolchain])
-
+    ALT1250MCUToolchain,
+    MDM9x07APSSToolchain,
+    MDM9x05APSSToolchain]
 
 def analyse(toolchain, binaries, outputs):
     """
@@ -813,6 +821,7 @@ def find_toolchain(args):
     for toolchain in _toolchains:
         if args.device == toolchain.device:
             return toolchain(args.tools)
+
     return None
 
 def list_devices():
@@ -852,12 +861,18 @@ def main():
 
     # get and validate arguments
     args = parser.parse_args()
-    toolchain = find_toolchain(args)
-    outputs = get_outputs(args, toolchain)
 
-    if not toolchain:
-        print("[ERROR] no toolchain specified")
+    try:
+        toolchain = find_toolchain(args)
+
+        if not toolchain:
+            print("[ERROR] no toolchain specified")
+            sys.exit(1)
+    except RuntimeError as error:
+        print("[ERROR] {}".format(error))
         sys.exit(1)
+
+    outputs = get_outputs(args, toolchain)
 
     if not outputs:
         print("[ERROR] no outputs (-j, -c) specified")

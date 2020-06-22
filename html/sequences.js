@@ -79,7 +79,7 @@ function renderSunburst(json) {
   // For efficiency, filter nodes to keep only those large enough to see.
   var nodes = partition.nodes(json)
       .filter(function(d) {
-      return (Math.max(0, Math.min(2 * Math.PI, x(d.x + d.dx))) > 0.005); // 0.005 radians = 0.29 degrees
+      return (Math.max(0, Math.min(2 * Math.PI, x(d.x + d.dx))) > 0.02); // 0.02 radians ~= 1 degree
       });
 
   var path = vis.data([json]).selectAll("path")
@@ -133,9 +133,42 @@ function renderSummary(json) {
   }
 }
 
-function render() {
+function filterLegato(element) {
+    if ("legato" in element && element['legato'])
+    {
+        var newObj = {"name": element["name"],
+                      "section": element["section"]};
+
+        if ("children" in element)
+        {
+            newObj["children"] = element["children"].reduce(function (filtered, node) {
+                var newObj = filterLegato(node);
+                if (newObj) { filtered.push(newObj); }
+                return filtered;
+            }, [])
+        }
+
+        if ("size" in element)
+        {
+            newObj["size"] = element["size"];
+        }
+        return newObj
+    }
+    else
+    {
+        return;
+    }
+}
+
+function render(legatoOnly) {
   var title = d3.select('title');
   title.text(device.toUpperCase() + " Binary Size Analysis");
+
+  if (legatoOnly)
+  {
+    size_map = filterLegato(size_map);
+    size_map["name"] = "Legato"
+  }
 
   renderSunburst(size_map);
   renderSummary(summary_map);
@@ -351,6 +384,3 @@ function click(d) {
   topLevel = d;
   setPercentage(topLevel.name, topLevel.value);
 }
-
-// Render the graphs
-render();
