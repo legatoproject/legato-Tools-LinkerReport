@@ -146,8 +146,10 @@ class CSVOutput(Output):
 
 class Toolchain(object):
     """Binary analyser."""
-    def __init__(self, base):
+    def __init__(self, base, source_root, legato_paths=[]):
         self.base = base
+        self.source_root = source_root
+        self.legato_paths = [path.split('/') for path in legato_paths]
 
     def strip_prefix(self, string, prefix):
         """Remove a common prefix from a string."""
@@ -158,7 +160,7 @@ class Toolchain(object):
     def to_path(self, symbol):
         """Build a symbol path from the other symbol properties."""
         p = [symbol['section']]
-        p += self.strip_prefix(os.path.abspath(symbol['file']), os.getcwd()).split(os.sep)[1:]
+        p += self.strip_prefix(os.path.abspath(symbol['file']), self.source_root).split(os.sep)[1:]
         return p
 
     def verify_compatible_node(self, symbol_name, key, old_value, new_value):
@@ -188,7 +190,7 @@ class Toolchain(object):
             {
                 'name': 'Binary',
                 'value': self.strip_prefix(
-                    self.strip_prefix(os.path.abspath(binaries[0]), os.getcwd()), os.sep)
+                    self.strip_prefix(os.path.abspath(binaries[0]), self.source_root), os.sep)
             },
             {
                 'name': 'Time',
@@ -197,20 +199,47 @@ class Toolchain(object):
         ]
         return info
 
-class QTIToolchain(Toolchain):
-    """ELF binary analyzer using ELFTools."""
-    def __init__(self, base):
-        if not HaveElfTools:
-            raise RuntimeError("python3-elftools required for QTI toolchains")
+    def is_legato_path(self, path):
+        for pattern in self.legato_paths:
+            # First element of path is the section (.text, .bss, etc.), so cut it out
+            if self.path_match(path[1:], pattern):
+                return True
+        return False
 
-        super(QTIToolchain, self).__init__(base)
+    def path_match(self, path, pattern):
+        for i in range(len(pattern)):
+            if pattern[i] == '...':
+                # '...' matches any number of path segments.
+                for j in range(i,len(path)):
+                    if self.path_match(path[j:], pattern[i+1:]):
+                        return True
+                return False
+            elif i >= len(path):
+                return False
+            elif pattern[i] == '*':
+                # '*' matches any single path segment
+                pass
+            elif pattern[i] != path[i]:
+                return False
+        return True
+
+class PyToolchain(Toolchain):
+    """ELF binary analyzer using Python ELFTools to extract symbols and debug information."""
+    def __init__(self, base, source_root, legato_paths=[]):
+        if not HaveElfTools:
+            raise RuntimeError("python3-elftools required for this toolchain")
+
+        super(PyToolchain, self).__init__(base, source_root, legato_paths)
 
     def set_file_for_symbol(self, symbol, pth):
         """Collect the file path for a symbol."""
-        symbol['file'] = self.strip_prefix(pth, os.getcwd())
+        symbol['file'] = self.strip_prefix(pth, self.source_root)
 
     def to_key(self, symbol):
         """Build a composite symbol lookup key from the other symbol properties."""
+        if 'address' not in symbol:
+            print('No address for symbol {}'.format(symbol))
+
         return symbol['address']
 
     def get_section_for_address(self, main_binary, address):
@@ -252,13 +281,23 @@ class QTIToolchain(Toolchain):
             for symbol_key in symbol:
                 if symbol.get(symbol_key):
                     if not symbols[key].get(symbol_key) or symbol_key in ('name', 'file', 'line'):
+                        pass
+                    else:
+                        if (symbol_key == 'size' and
+                            abs(symbol[symbol_key] - symbols[key][symbol_key]) >= 4) or \
+                           (symbol_key != 'size' and
+                            symbol[symbol_key] != symbols[key][symbol_key]):
+                            print('[WARN] updating symbol {} with unlike symbol {}'
+                                  .format(symbols[key], symbol))
+                            break
+
+            for symbol_key in symbol:
+                if symbol.get(symbol_key):
+                    if not symbols[key].get(symbol_key) or symbol_key in ('name', 'file', 'line'):
                         # Add new information to a symbol, and replace name, file, line with
                         # info from debug table, even if present
                         symbols[key][symbol_key] = symbol[symbol_key]
-                    else:
-                        if symbol[symbol_key] != symbols[key][symbol_key]:
-                            print('[WARN] updating symbol {} with unlike symbol {}'
-                                  .format(symbols[key], symbol))
+
         elif create:
             symbols[key] = symbol
 
@@ -274,9 +313,9 @@ class QTIToolchain(Toolchain):
         for symbol in symtab.iter_symbols():
             # Skip if not a symbol type we care about
             if symbol['st_info']['type'] == 'STT_FILE':
-                base_file = self.strip_prefix(symbol.name, os.getcwd())
+                base_file = self.strip_prefix(symbol.name, self.source_root)
                 if base_file.find('legato') != -1:
-                    cur_file = os.path.join(os.getcwd(), 'legato', '<unknown>')
+                    cur_file = os.path.join(self.source_root, 'legato', '<unknown>')
                 else:
                     cur_file = symbol.name
                 continue
@@ -319,14 +358,15 @@ class QTIToolchain(Toolchain):
 
         # Add a fake symbol for QSR_STRING section which is blended by QShrink
         qst_section = main_binary.get_section_by_name('QSR_STRING')
-        symbol = { 'name':    'QSR_STRING',
-                   'address': qst_section['sh_addr'],
-                   'section': 'QSR_STRING',
-                   'file': '<NO_SOURCE>',
-                   'line': 0,
-                   'size': qst_section['sh_size'],
-                   'path': None }
-        self.update_node(symbols, symbol, 1)
+        if qst_section:
+            symbol = { 'name':    'QSR_STRING',
+                       'address': qst_section['sh_addr'],
+                       'section': 'QSR_STRING',
+                       'file': '<NO_SOURCE>',
+                       'line': 0,
+                       'size': qst_section['sh_size'],
+                       'path': None }
+            self.update_node(symbols, symbol, 1)
 
     def scan_debuginfo(self, symbols, main_binary, debug_info):
         for cu in debug_info.iter_CUs():
@@ -336,7 +376,8 @@ class QTIToolchain(Toolchain):
                 symbol = None
                 if die.tag == 'DW_TAG_subprogram':
 
-                    if 'DW_AT_low_pc' not in die.attributes:
+                    if 'DW_AT_low_pc' not in die.attributes or \
+                       die.attributes['DW_AT_low_pc'].value == 0:
                         continue
 
                     address = die.attributes['DW_AT_low_pc'].value
@@ -346,13 +387,23 @@ class QTIToolchain(Toolchain):
                     except KeyError:
                         name = None
 
+                    if die.attributes['DW_AT_high_pc'].form == 'DW_FORM_addr':
+                        symbol_size = (die.attributes['DW_AT_high_pc'].value -
+                                       die.attributes['DW_AT_low_pc'].value)
+                    elif die.attributes['DW_AT_high_pc'].form in ('DW_FORM_data1'
+                                                                  'DW_FORM_data2'
+                                                                  'DW_FORM_data4'
+                                                                  'DW_FORM_data8'):
+                        symbol_size = die.attributes['DW_AT_high_pc'].value
+                    else:
+                        print('[WARN] Unknown size for symbol {} in debug info'.format(name))
+                        symbol_size = None
                     symbol = { 'name': name,
                                'address': address,
                                'section': self.get_section_for_address(main_binary,
                                                                        address),
                                'line': 0,
-                               'size': (die.attributes['DW_AT_high_pc'].value -
-                                        die.attributes['DW_AT_low_pc'].value),
+                               'size': symbol_size,
                                'path': None }
                     self.set_file_for_symbol(symbol,
                                              file_die.attributes['DW_AT_name'] \
@@ -365,10 +416,16 @@ class QTIToolchain(Toolchain):
                     if not die.attributes['DW_AT_location'].value:
                         continue
 
-                    address = struct.unpack('<L',
-                                            bytearray(die
-                                                      .attributes['DW_AT_location']
-                                                      .value[1:]))[0]
+                    if main_binary.little_endian:
+                        address = struct.unpack('<L',
+                                                bytearray(die
+                                                          .attributes['DW_AT_location']
+                                                          .value[1:]))[0]
+                    else:
+                        address = struct.unpack('>L',
+                                                bytearray(die
+                                                          .attributes['DW_AT_location']
+                                                          .value[1:]))[0]
 
                     symbol = {'address': address,
                               'section': self.get_section_for_address(main_binary, address),
@@ -390,8 +447,6 @@ class QTIToolchain(Toolchain):
                    'file': '<NONE>',
                    'line': 0,
                    'path': None }
-        if size > 16:
-            print('[WARN] found {} pad at {:08x}'.format(size, address))
         self.update_node(symbols, symbol, 1)
 
     def add_unknown(self, symbols, address, size, filename):
@@ -439,7 +494,9 @@ class QTIToolchain(Toolchain):
         cur_section = None
 
         for symbol in sorted_symbols:
-            if not symbol['name']:
+            if 'size' not in symbol or not symbol['size']:
+                symbols.pop(self.to_key(symbol))
+            elif 'name' not in symbol or not symbol['name']:
                 cur_section = symbol
             elif cur_section:
                 if symbol['address'] < cur_section['address'] + cur_section['size']:
@@ -461,6 +518,7 @@ class QTIToolchain(Toolchain):
 
         last_addr = self.get_first_address(main_binary)
         last_file_addr = last_addr
+        last_symbol = None
         try:
             symbol = next(symbol_iter)
             while True:
@@ -472,7 +530,7 @@ class QTIToolchain(Toolchain):
                             self.add_unknown(symbols,
                                              last_addr, file_addr['high_addr'] - last_addr,
                                              file_addr['file'])
-                            last_addr = file_addr['high_addr']
+                        last_addr = file_addr['high_addr']
 
                         last_file_addr = file_addr['high_addr']
                         file_addr = next(file_iter)
@@ -481,6 +539,7 @@ class QTIToolchain(Toolchain):
                            address >= file_addr['low_addr']:
                             self.add_pad(symbols,
                                          last_file_addr, file_addr['low_addr'] - last_file_addr)
+
                         continue
                 except StopIteration:
                     file_addr = None
@@ -493,11 +552,16 @@ class QTIToolchain(Toolchain):
                 if not symbol['size']:
                     print('[ERR] missing size in symbol {}'.format(symbol))
 
-                last_addr = self.add_gaps_for_address(symbols,
-                                                      last_addr, address, symbol['size'],
-                                                      file_addr)
+                if last_symbol and last_symbol['section'] == symbol['section']:
+                    last_addr = self.add_gaps_for_address(symbols,
+                                                          last_addr, address, symbol['size'],
+                                                          file_addr)
+                else:
+                    last_addr = address + symbol['size']
+
                 if last_addr >= address:
                     # Address consumed, move on to next address
+                    last_symbol = symbol
                     symbol = next(symbol_iter)
         except StopIteration:
             pass
@@ -521,9 +585,15 @@ class QTIToolchain(Toolchain):
 
         debug_info = main_binary.get_dwarf_info()
 
+        print("[INFO] analyzing debug info...")
+
         self.scan_debuginfo(symbols, main_binary, debug_info)
 
+        print("[INFO] removing unneeded sections...")
+
         self.remove_unneeded_sections(symbols)
+
+        print("[INFO] resolving unknown symbols...")
 
         self.resolve_unknowns(symbols, main_binary, debug_info)
 
@@ -536,14 +606,12 @@ class QTIToolchain(Toolchain):
 
             symbol['path'] = self.to_path(symbol)
 
-            if ('legato' in symbol['path'] or 'frameworkAdaptor' in symbol['path']):
-                symbol['legato'] = True
-
+            symbol['legato'] = self.is_legato_path(symbol['path'])
 
 class GNUToolchain(Toolchain):
     """ELF binary analyser using GNU toolchain."""
-    def __init__(self, base, prefix = ""):
-        super(GNUToolchain, self).__init__(base)
+    def __init__(self, base, source_root = None, prefix = "", legato_paths=[]):
+        super(GNUToolchain, self).__init__(base, source_root, legato_paths)
         self.prefix = prefix
         self.nm = os.path.join(self.base, self.prefix + "nm")
         self.addr2line = os.path.join(self.base, self.prefix + "addr2line")
@@ -555,7 +623,7 @@ class GNUToolchain(Toolchain):
     def set_file_for_symbol(self, symbol, pth):
         """Collect the file path for a symbol."""
         parts = pth.split(':')
-        symbol['file'] = self.strip_prefix(parts[0], os.getcwd())
+        symbol['file'] = self.strip_prefix(parts[0], self.source_root)
         try:
             symbol['line'] = int(parts[1]) if len(parts) > 1 else 0
         except ValueError:
@@ -655,18 +723,20 @@ class GNUToolchain(Toolchain):
 
             symbol['path'] = self.to_path(symbol)
 
+            symbol['legato'] = self.is_legato_path(symbol['path'])
+
         addr2line.terminate()
         addr2line.wait()
 
-class ALT1250MAPToolchain(GNUToolchain):
+class ALT1250MAPGNUToolchain(GNUToolchain):
     """ELF binary analyser using GNU toolchain for ALT1250 MAP Core."""
     device = "alt1250-map"
-    ram = [".bss", ".sbss"]
+    ram = [".bss", ".sbss", ".ram_bss"]
     rom = [".rodata", ".rodatafiller", ".text"]
     ram_and_rom = [".data", ".exception_vector", ".ram_text", ".sdata"]
 
-    def __init__(self, base, prefix = "mips-mti-elf-"):
-        super(ALT1250MAPToolchain, self).__init__(base, prefix)
+    def __init__(self, base, source_root = None, prefix = "mips-mti-elf-"):
+        super(ALT1250MAPGNUToolchain, self).__init__(base, source_root, prefix)
 
     def to_info(self, line, info):
         """Convert a swi_version line to an info key/value pair."""
@@ -680,7 +750,7 @@ class ALT1250MAPToolchain(GNUToolchain):
 
     def build_info(self, binaries):
         """Try to find the swi_version file near the ELF file and use it to populate build info."""
-        info = super(ALT1250MAPToolchain, self).build_info(binaries)
+        info = super(ALT1250MAPGNUToolchain, self).build_info(binaries)
         swi_version_path = os.path.join(os.path.dirname(binaries[0]), "swi_version")
 
         if os.access(swi_version_path, os.R_OK):
@@ -693,14 +763,14 @@ class ALT1250MAPToolchain(GNUToolchain):
 class ALT1250MCUToolchain(GNUToolchain):
     """ELF binary analyser using GNU toolchain for ALT1250 MCU Core."""
     device = "alt1250-mcu"
-    ram = [".bss", ".heap", ".stack_dummy"]
+    ram = [".bss", ".heap", ".stack_dummy", ".bss_gpm1", ".bss_gpm2"]
     rom = [".rodata", ".rodatafiller", ".text"]
     ram_and_rom = [".data", ".uncached"]
 
-    def __init__(self, base, prefix = "arm-none-eabi-"):
-        super(ALT1250MCUToolchain, self).__init__(base, prefix)
+    def __init__(self, base, source_root = None, prefix = "arm-none-eabi-"):
+        super(ALT1250MCUToolchain, self).__init__(base, source_root, prefix)
 
-class MDM9xAPSSToolchain(QTIToolchain):
+class MDM9xAPSSToolchain(PyToolchain):
     """
     ELF binary analyser for the output of the ARM RVCT toolchain for the MDM9x07's APSS.  Note that
     this "toolchain" doesn't actually use the ARM RVCT "fromelf" tool as it doesn't provide all of
@@ -711,11 +781,11 @@ class MDM9xAPSSToolchain(QTIToolchain):
     rom = []
     ram_and_rom = ["APP_RAM", "MAIN_APP_1", "QSR_STRING"]
     device = ""
-    map_path = ""
     le_config_path = ""
+    legato_paths=['.../legato', '.../frameworkAdaptor']
 
-    def __init__(self, base):
-        super(MDM9xAPSSToolchain, self).__init__(base)
+    def __init__(self, base, source_root):
+        super(MDM9xAPSSToolchain, self).__init__(base, source_root, self.legato_paths)
 
     def set_file_for_symbol(self, symbol, pth):
         """Collect the file path for a symbol."""
@@ -776,29 +846,63 @@ class MDM9x07APSSToolchain(MDM9xAPSSToolchain):
     ELF binary analyser for the output of the ARM RVCT toolchain for the MDM9x05's APSS.
     """
     device = "mdm9x07-apss-tx"
-    map_path = "../bsp/apps_proc_img/build/ACDNAAAZ/APPS_PROC_ACDNAAAZA.map"
     le_config_path = "../../../../legato/build/gill/framework/include/le_config.h"
 
-    def __init__(self, base):
-        super(MDM9x07APSSToolchain, self).__init__(base)
+    def __init__(self, base, source_root):
+        super(MDM9x07APSSToolchain, self).__init__(base, source_root)
 
 class MDM9x05APSSToolchain(MDM9xAPSSToolchain):
     """
     ELF binary analyser for the output of the ARM RVCT toolchain for the MDM9x07's APSS.
     """
     device = "mdm9x05-apss-tx"
-    map_path = "../bsp/apps_proc_img/build/ACFNAAMZ/APPS_PROC_ACFNAAMZA.map"
     le_config_path = "../../../../legato/build/rc51/framework/include/le_config.h"
 
-    def __init__(self, base):
-        super(MDM9x05APSSToolchain, self).__init__(base)
+    def __init__(self, base, source_root):
+        super(MDM9x05APSSToolchain, self).__init__(base, source_root)
+
+class ALT1250MAPPyElfToolchain(PyToolchain):
+    """ELF binary analyser using pyelf analyzer ALT1250 MAP Core."""
+    device = "alt1250-map-pyelftools"
+    ram = [".bss", ".sbss", ".ram_bss"]
+    rom = [".rodata", ".rodatafiller", ".text"]
+    ram_and_rom = [".data", ".exception_vector", ".ram_text", ".sdata"]
+    legato_paths=['.../legato', '.../frameworkAdaptor', 'modem/swi', 'modem/build', '.../octave']
+
+    def __init__(self, base, source_root):
+        super(ALT1250MAPPyElfToolchain, self).__init__(base, source_root, self.legato_paths)
+
+    def to_info(self, line, info):
+        """Convert a swi_version line to an info key/value pair."""
+        l = line.split(' ')
+        if len(l) > 2:
+            entry = {
+                'name': l[1],
+                'value': " ".join(l[2:]).strip()
+            }
+            info.append(entry)
+
+    def build_info(self, binaries):
+        """Try to find the swi_version file near the ELF file and use it to populate build info."""
+        info = super(ALT1250MAPPyElfToolchain, self).build_info(binaries)
+        swi_version_path = os.path.join(os.path.dirname(binaries[0]), "swi_version")
+
+        if os.access(swi_version_path, os.R_OK):
+            with open(swi_version_path, "r") as swi_version:
+                for line in swi_version:
+                    if line.startswith("\toption"):
+                        self.to_info(line, info)
+        return info
+
 
 # List of supported toolchains/environments.
 _toolchains = [
-    ALT1250MAPToolchain,
+    ALT1250MAPPyElfToolchain,
+    ALT1250MAPGNUToolchain,
     ALT1250MCUToolchain,
     MDM9x07APSSToolchain,
-    MDM9x05APSSToolchain]
+    MDM9x05APSSToolchain,
+    ]
 
 def analyse(toolchain, binaries, outputs):
     """
@@ -820,7 +924,7 @@ def find_toolchain(args):
     """Map device types to toolchains."""
     for toolchain in _toolchains:
         if args.device == toolchain.device:
-            return toolchain(args.tools)
+            return toolchain(args.tools, args.source_root)
 
     return None
 
@@ -858,6 +962,9 @@ def main():
     parser.add_argument('-i', '--binary',       type = str, required = True, nargs = '+',
                          help = 'path to the ELF binary or binaries. The first will be used to \
                          determine symbols, while subsequent files will help to fill in hierarchy.')
+    parser.add_argument('-r', '--source-root',  type = str, default=os.getcwd(),
+                        help = 'path to the root of the source tree.  Paths will be given relative \
+                        to this directory.')
 
     # get and validate arguments
     args = parser.parse_args()
