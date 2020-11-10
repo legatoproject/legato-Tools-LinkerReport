@@ -760,7 +760,7 @@ class ALT1250MAPGNUToolchain(GNUToolchain):
                         self.to_info(line, info)
         return info
 
-class ALT1250MCUToolchain(GNUToolchain):
+class ALT1250MCUGNUToolchain(GNUToolchain):
     """ELF binary analyser using GNU toolchain for ALT1250 MCU Core."""
     device = "alt1250-mcu"
     ram = [".bss", ".heap", ".stack_dummy", ".bss_gpm1", ".bss_gpm2"]
@@ -768,7 +768,7 @@ class ALT1250MCUToolchain(GNUToolchain):
     ram_and_rom = [".data", ".uncached"]
 
     def __init__(self, base, source_root = None, prefix = "arm-none-eabi-"):
-        super(ALT1250MCUToolchain, self).__init__(base, source_root, prefix)
+        super(ALT1250MCUGNUToolchain, self).__init__(base, source_root, prefix)
 
 class MDM9xAPSSToolchain(PyToolchain):
     """
@@ -894,12 +894,24 @@ class ALT1250MAPPyElfToolchain(PyToolchain):
                         self.to_info(line, info)
         return info
 
+class ALT1250MCUPyElfToolchain(PyToolchain):
+    """ELF binary analyser using pyelf analyzer ALT1250 MCU Core."""
+    device = "alt1250-mcu-pyelftools"
+    ram = [".bss", ".heap", ".stack_dummy", ".bss_gpm1", ".bss_gpm2"]
+    rom = [".rodata", ".rodatafiller", ".text"]
+    ram_and_rom = [".data", ".uncached"]
+    legato_paths=[".../legato", ".../frameworkAdaptor", "build"]
+
+    def __init__(self, base, source_root = None):
+        super(ALT1250MCUPyElfToolchain, self).__init__(base, source_root, self.legato_paths)
+
 
 # List of supported toolchains/environments.
 _toolchains = [
     ALT1250MAPPyElfToolchain,
+    ALT1250MCUPyElfToolchain,
     ALT1250MAPGNUToolchain,
-    ALT1250MCUToolchain,
+    ALT1250MCUGNUToolchain,
     MDM9x07APSSToolchain,
     MDM9x05APSSToolchain,
     ]
