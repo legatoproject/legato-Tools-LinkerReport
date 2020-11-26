@@ -77,9 +77,9 @@ class JSOutput(Output):
             'Build': build_info
         }
         section_types = {
-            'RAM': self.toolchain.ram,
-            'ROM': self.toolchain.rom,
-            'RAM+ROM': self.toolchain.ram_and_rom
+            'RAM': self.toolchain.ram.copy(),
+            'ROM': self.toolchain.rom.copy(),
+            'RAM+ROM': self.toolchain.ram_and_rom.copy()
         }
 
         root = {
@@ -87,6 +87,22 @@ class JSOutput(Output):
             'section': self.toolchain.device,
             'children': []
         }
+
+        # First summarize all RAM overlays, and add the largest to the RAM size
+        try:
+            overlay_summary = [0] * len(self.toolchain.ram_overlays)
+
+            for symbol in symbols.values():
+                for i, overlay in enumerate(self.toolchain.ram_overlays):
+                    if symbol['section'] in overlay:
+                        overlay_summary[i] += symbol['size']
+
+            largest_overlay = max(range(len(overlay_summary)), key=overlay_summary.__getitem__)
+
+            section_types['RAM'].extend(self.toolchain.ram_overlays[largest_overlay])
+        except:
+            pass
+
         for symbol in symbols.values():
             leaf = {
                 'name': symbol['name'],
@@ -98,12 +114,9 @@ class JSOutput(Output):
 
             self.add_leaf(root, symbol['path'], leaf)
 
-            if symbol['section'] in self.toolchain.ram:
-                summary['RAM'] += symbol['size']
-            elif symbol['section'] in self.toolchain.rom:
-                summary['ROM'] += symbol['size']
-            elif symbol['section'] in self.toolchain.ram_and_rom:
-                summary['RAM+ROM'] += symbol['size']
+            for section_type, sections in section_types.items():
+                if symbol['section'] in sections:
+                    summary[section_type] += symbol['size']
 
         self.fd.seek(0)
         self.fd.write("// Automatically generated file; do not edit.\n")
@@ -240,7 +253,10 @@ class PyToolchain(Toolchain):
         if 'address' not in symbol:
             print('No address for symbol {}'.format(symbol))
 
-        return symbol['address']
+        if 'section' not in symbol:
+            print('No section for symbol {}'.format(symbol))
+
+        return hash(symbol['address']) ^ hash(symbol['section'])
 
     def get_section_for_address(self, main_binary, address):
         for section in main_binary.iter_sections():
@@ -864,9 +880,11 @@ class MDM9x05APSSToolchain(MDM9xAPSSToolchain):
 class ALT1250MAPPyElfToolchain(PyToolchain):
     """ELF binary analyser using pyelf analyzer ALT1250 MAP Core."""
     device = "alt1250-map-pyelftools"
-    ram = [".bss", ".sbss", ".ram_bss"]
+    ram = [".bss", ".sbss", ".ram_bss", ".ram_bss.common_pools"]
     rom = [".rodata", ".rodatafiller", ".text"]
     ram_and_rom = [".data", ".exception_vector", ".ram_text", ".sdata"]
+    ram_overlays = [[".ram_bss.pools1", ".ram_bss.group1"],
+                    [".ram_bss.pools2", ".ram_bss.group2"]]
     legato_paths=['.../legato', '.../frameworkAdaptor', 'modem/swi', 'modem/build', '.../octave']
 
     def __init__(self, base, source_root):
