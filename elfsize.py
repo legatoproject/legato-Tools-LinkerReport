@@ -38,15 +38,13 @@ class Output(object):
         self.fd.close()
         print("[INFO] data written to", self.filename)
 
-class JSOutput(Output):
-    """Output to JavaScript suitable for d3.js visualisations."""
-    def __init__(self, toolchain, fd, browser = False, also_csv = False):
-        super(JSOutput, self).__init__(toolchain, fd)
-        self.browser = browser
-        self.also_csv = also_csv
+class JSONOutput(Output):
+    """ Output symbol size info to a json file. """
+    def __init__(self, toolchain, fd):
+        super(JSONOutput, self).__init__(toolchain, fd)
 
     def add_leaf(self, parent, pth, leaf):
-        """Add a leaf node to the JS symbol tree."""
+        """Add a leaf node to the JSON symbol tree."""
         if 'legato' in leaf and leaf['legato']:
             parent['legato'] = True
 
@@ -66,6 +64,41 @@ class JSOutput(Output):
             parent['children'].append(node)
             self.add_leaf(node, pth[1:], leaf)
 
+    def get_symbol_tree(self, symbols):
+        """ Get a json of symbols """
+        root = {
+            'name': self.toolchain.device,
+            'section': self.toolchain.device,
+            'children': []
+        }
+        for symbol in symbols.values():
+            leaf = {
+                'name': symbol['name'],
+                'size': symbol['size'],
+                'section': symbol['section']
+            }
+            if "legato" in symbol and symbol['legato']:
+                leaf['legato'] = True
+
+            self.add_leaf(root, symbol['path'], leaf)
+
+        return root
+
+    def output(self, symbols, build_info):
+        """Generate JSON output."""
+        root = self.get_symbol_tree(symbols);
+        self.fd.seek(0)
+        json.dump(root, self.fd, indent=4)
+        self.fd.write("\n")
+        self.close()
+
+class JSOutput(JSONOutput):
+    """Output to JavaScript suitable for d3.js visualisations."""
+    def __init__(self, toolchain, fd, browser = False, also_csv = False):
+        super(JSOutput, self).__init__(toolchain, fd)
+        self.browser = browser
+        self.also_csv = also_csv
+
     def output(self, symbols, build_info):
         """Generate JavaScript output for consumption by the the HTML interface."""
         summary = {
@@ -80,12 +113,6 @@ class JSOutput(Output):
             'RAM': self.toolchain.ram.copy(),
             'ROM': self.toolchain.rom.copy(),
             'RAM+ROM': self.toolchain.ram_and_rom.copy()
-        }
-
-        root = {
-            'name': self.toolchain.device,
-            'section': self.toolchain.device,
-            'children': []
         }
 
         # First summarize all RAM overlays, and add the largest to the RAM size
@@ -103,17 +130,11 @@ class JSOutput(Output):
         except:
             pass
 
+        # Get json of symbols:
+        symbol_tree_root = self.get_symbol_tree(symbols);
+
+        # Calculate section summary:
         for symbol in symbols.values():
-            leaf = {
-                'name': symbol['name'],
-                'size': symbol['size'],
-                'section': symbol['section']
-            }
-            if "legato" in symbol and symbol['legato']:
-                leaf['legato'] = True
-
-            self.add_leaf(root, symbol['path'], leaf)
-
             for section_type, sections in section_types.items():
                 if symbol['section'] in sections:
                     summary[section_type] += symbol['size']
@@ -130,7 +151,7 @@ class JSOutput(Output):
         self.fd.write("\n")
 
         self.fd.write("var size_map = ")
-        json.dump(root, self.fd, indent=4)
+        json.dump(symbol_tree_root, self.fd, indent=4)
         self.fd.write("\n")
 
         self.close()
@@ -970,6 +991,8 @@ def get_outputs(args, toolchain):
             also_csv = bool(args.csv))
     if args.csv:
         outputs['csv'] = CSVOutput(toolchain, args.csv)
+    if args.json:
+        outputs['json'] = JSONOutput(toolchain, args.json)
     return outputs
 
 def main():
@@ -995,6 +1018,8 @@ def main():
     parser.add_argument('-r', '--source-root',  type = str, default=os.getcwd(),
                         help = 'path to the root of the source tree.  Paths will be given relative \
                         to this directory.')
+    parser.add_argument('-s', '--json',         type = argparse.FileType('w'),
+                        help = 'path of output json file.')
 
     # get and validate arguments
     args = parser.parse_args()
