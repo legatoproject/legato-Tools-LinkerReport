@@ -476,10 +476,10 @@ class PyToolchain(Toolchain):
                 if symbol:
                     self.update_node(symbols, symbol, 1)
 
-    def add_pad(self, symbols, address, size):
+    def add_pad(self, symbols, address, size, section=None):
         symbol = { 'name': 'PAD',
                    'address': address,
-                   'section': None,
+                   'section': section,
                    'size': size,
                    'file': '<NONE>',
                    'line': 0,
@@ -499,7 +499,7 @@ class PyToolchain(Toolchain):
 
     def add_gaps_for_address(self,
                              symbols, last_addr, address, size,
-                             file_addr):
+                             file_addr, section):
         gap = address - last_addr
         if gap < 0:
             print('[WARN] Symbol overlap at {:08x}: {}, {}'.format(address,
@@ -510,11 +510,11 @@ class PyToolchain(Toolchain):
             if not file_addr or last_addr < file_addr['low_addr']:
                 if file_addr and address > file_addr['low_addr']:
                     self.add_pad(symbols,
-                                 last_addr, file_addr['low_addr'] - last_addr)
+                                 last_addr, file_addr['low_addr'] - last_addr, section)
                     return file_addr['low_addr']
                 else:
                     self.add_pad(symbols,
-                                 last_addr, address - last_addr)
+                                 last_addr, address - last_addr, section)
                     return address + size
             else:
                 assert(address < file_addr['high_addr']) # Should be guaranteed by caller
@@ -560,7 +560,6 @@ class PyToolchain(Toolchain):
             symbol = next(symbol_iter)
             while True:
                 address = symbol['address']
-
                 try:
                     if file_addr and address >= file_addr['high_addr']:
                         if last_addr < file_addr['high_addr']:
@@ -574,8 +573,13 @@ class PyToolchain(Toolchain):
 
                         if last_file_addr < file_addr['low_addr'] and \
                            address >= file_addr['low_addr']:
+                            if last_symbol and last_symbol['section'] == symbol['section']:
+                                section = symbol['section']
+                            else:
+                                section = None
                             self.add_pad(symbols,
-                                         last_file_addr, file_addr['low_addr'] - last_file_addr)
+                                         last_file_addr, file_addr['low_addr'] - last_file_addr,
+                                         section)
 
                         continue
                 except StopIteration:
@@ -592,7 +596,8 @@ class PyToolchain(Toolchain):
                 if last_symbol and last_symbol['section'] == symbol['section']:
                     last_addr = self.add_gaps_for_address(symbols,
                                                           last_addr, address, symbol['size'],
-                                                          file_addr)
+                                                          file_addr,
+                                                          symbol['section'])
                 else:
                     last_addr = address + symbol['size']
 
@@ -633,6 +638,11 @@ class PyToolchain(Toolchain):
         print("[INFO] resolving unknown symbols...")
 
         self.resolve_unknowns(symbols, main_binary, debug_info)
+
+        print("[DEBUG] dumping symbol table...")
+        
+        for symbol in self.get_sorted_symbols(symbols):
+            print("0x{:08x}{:8d} {}".format(symbol['address'], symbol['size'], symbol['name']))
 
         return symbols
 
