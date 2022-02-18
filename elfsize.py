@@ -453,16 +453,22 @@ class PyToolchain(Toolchain):
                     if not die.attributes['DW_AT_location'].value:
                         continue
 
-                    if main_binary.little_endian:
-                        address = struct.unpack('<L',
-                                                bytearray(die
-                                                          .attributes['DW_AT_location']
-                                                          .value[1:]))[0]
+                    loc = die.attributes['DW_AT_location'].value
+
+                    if loc[0] == 0x03 and len(loc) == 5:
+                        # Address constant
+                        if main_binary.little_endian:
+                            address = struct.unpack('<L',
+                                                    bytearray(loc[1:]))[0]
+                        else:
+                            address = struct.unpack('>L',
+                                                    bytearray(loc[1:]))[0]
+                    elif loc[-1] == 0x9f:
+                        # stack value -- nothing in static memory, so just ignore
+                        # the whole thing
+                        continue
                     else:
-                        address = struct.unpack('>L',
-                                                bytearray(die
-                                                          .attributes['DW_AT_location']
-                                                          .value[1:]))[0]
+                        raise RuntimeError("Unknown location form {:x}".format(loc))
 
                     symbol = {'address': address,
                               'section': self.get_section_for_address(main_binary, address),
